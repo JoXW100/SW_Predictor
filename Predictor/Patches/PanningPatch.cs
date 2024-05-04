@@ -8,15 +8,13 @@ using StardewValley.Tools;
 
 namespace Predictor.Patches
 {
-    internal class PanningPatch : PatchBase
+    public sealed class PanningPatch : PatchWithContextBase<PredictionContext>
     {
         public override string Name => nameof(PanningPatch);
 
-        private readonly Dictionary<Vector2, PredictionContext> Context;
-
         public PanningPatch(IModHelper helper, IMonitor monitor) : base(helper, monitor)
         {
-            Context = new();
+            
         }
 
         public override void OnAttach()
@@ -38,6 +36,7 @@ namespace Predictor.Patches
             Helper.Events.GameLoop.OneSecondUpdateTicked -= OnUpdateTicked;
             Helper.Events.World.LargeTerrainFeatureListChanged -= OnUpdateTicked;
             Helper.Events.Display.RenderedWorld -= OnRendered;
+            Menu = null;
         }
         
         public override bool CheckRequirements()
@@ -48,20 +47,20 @@ namespace Predictor.Patches
 
         private void OnRendered(object? sender, RenderedWorldEventArgs e)
         {
-            Utils.DrawContextItems(e.SpriteBatch, Context, ModEntry.Instance.Config.EnablePaningSpotItems, ModEntry.Instance.Config.EnablePaningSpotOutlines, 2);
+            if (CheckRequirements())
+            {
+                Utils.DrawContextItems(e.SpriteBatch, Context, ModEntry.Instance.Config.EnablePaningSpotItems, ModEntry.Instance.Config.EnablePaningSpotOutlines, 2);
+            }
         }
 
         private void OnUpdateTicked(object? sender, EventArgs e)
         {
-            Menu = null;
-            Context.Clear();
-
             if (!CheckRequirements())
             {
-                Monitor.LogOnce($"{nameof(PanningPatch)} attached when requirements are false", LogLevel.Debug);
                 return;
             }
 
+            Context.Clear();
             if (Game1.player.CurrentItem is Pan pan)
             {
                 var pos = Game1.currentLocation.orePanPoint.Value;

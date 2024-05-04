@@ -1,14 +1,20 @@
 ﻿{
-  "menu.HarvestableBushHeader": "Bushes:",
-  "menu.DigSpotHeader": "Dig Spots:",
-  "menu.FishingHeader": "Fishing Info:",
-  "menu.FishingMinigameLabel": "Catching:",
-  "menu.FishingBaitLabel": "Bait:",
-  "menu.FishingTackleLabel": "Tackle:",
-  "menu.FishingTrashChanceLabel": "Trash:",
-  "menu.PanningSpotHeader": "Panning Spots:",
-  "menu.SpawedHeader": "Spawned:",
+  "menu.HarvestableBushHeader": "Bushes",
+  "menu.DigSpotHeader": "Dig Spots",
+  "menu.BreakableContainerHeader": "Breakable containers",
+  "menu.FishingHeader": "Fishing Info",
+  "menu.FishingMinigameLabel": "Catching",
+  "menu.FishingBaitLabel": "Bait",
+  "menu.FishingTackleLabel": "Tackle",
+  "menu.FishingTrashChanceLabel": "Trash",
+  "menu.PanningSpotHeader": "Panning Spots",
+  "menu.SpawedHeader": "Spawned",
   "menu.DistanceUnit": "Tiles",
+  "menu.SlotsWinMultiplierLabel": "Win Multiplier: {0}x",
+  "menu.CalicoNextHitPlayerCardLabel": "Next 'Hit' Player card: {0}",
+  "menu.CalicoNextHitDealerCardLabel": "Next 'Hit' Dealer card: {0}",
+  "menu.CalicoNextStandOutcomeLabel.Win": "Next 'Stand' Outcome: Win",
+  "menu.CalicoNextStandOutcomeLabel.Loss": "Next 'Stand' Outcome: Loss",
 
   "options.Enabled": "Enable Mod",
   "options.Enabled.desc": "If the mod functionality is enabled.",
@@ -65,6 +71,8 @@
 
   "options.TrackHarvestableBushes": "Bushes",
   "options.TrackHarvestableBushes.desc": "Track nearby harvestable bushes.",
+  "options.TrackBreakableContainers": "Breakable containers",
+  "options.TrackBreakableContainers.desc": "Track nearby breakable containers.",
   "options.TrackDigSpots": "Dig spots",
   "options.TrackDigSpots.desc": "Track nearby artifact and seed spots.",
   "options.TrackSpawned": "Spawned",
@@ -99,6 +107,11 @@
   "options.ShowLessFishInfo": "Show less fish info",
   "options.ShowLessFishInfo.desc": "Only shows icons and chances in fising menu.",
 
+  "options.ShowCalicoJackOutcome": "Show Calico Jack outcome",
+  "options.ShowCalicoJackOutcome.desc": "Shows the next cards drawn when using 'Hit', and the result if using 'Stand'.",
+  "options.ShowSlotsOutcome": "Show Slots outcome",
+  "options.ShowSlotsOutcome.desc": "Shows Win multiplier for Calico Slots, 0x means a loss. The multiplier changes over time.",
+
   "options.MenuOffsetX": "Menu offset X",
   "options.MenuOffsetX.desc": "Horisontal menu position offset.",
   "options.MenuOffsetY": "Menu offset Y",
@@ -122,5 +135,6 @@
   "config.trackers.text": "Show trackers for:",
   "config.trackers.subsection1": "Tracker Menu",
   "config.fishing.title": "Fishing",
+  "config.minigames.title": "Minigames",
   "config.menu.title": "Menu"
 }

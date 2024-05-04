@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Predictor.Framework;
+﻿using Predictor.Framework;
 using Predictor.Framework.Extentions;
 using StardewValley;
 using StardewValley.TerrainFeatures;
@@ -8,15 +7,13 @@ using StardewModdingAPI.Events;
 
 namespace Predictor.Patches
 {
-    public sealed class BushPatch : PatchBase
+    public sealed class BushPatch : PatchWithContextBase<PredictionContext>
     {
         public override string Name =>  nameof(BushPatch);
 
-        private readonly Dictionary<Vector2, PredictionContext> Context;
-
         public BushPatch(IModHelper helper, IMonitor monitor) : base(helper, monitor)
         {
-            Context = new();
+
         }
 
         public override void OnAttach()
@@ -38,6 +35,7 @@ namespace Predictor.Patches
             Helper.Events.GameLoop.OneSecondUpdateTicked -= OnUpdateTicked;
             Helper.Events.World.LargeTerrainFeatureListChanged -= OnUpdateTicked;
             Helper.Events.Display.RenderedWorld -= OnRendered;
+            Menu = null;
         }
 
         public override bool CheckRequirements()
@@ -48,20 +46,20 @@ namespace Predictor.Patches
 
         private void OnRendered(object? sender, RenderedWorldEventArgs e)
         {
-            Utils.DrawContextItems(e.SpriteBatch, Context, ModEntry.Instance.Config.EnableHarvestableBushItems, ModEntry.Instance.Config.EnableHarvestableBushOutlines, 2);
+            if (CheckRequirements())
+            {
+                Utils.DrawContextItems(e.SpriteBatch, Context, ModEntry.Instance.Config.EnableHarvestableBushItems, ModEntry.Instance.Config.EnableHarvestableBushOutlines, 2);
+            }
         }
 
         private void OnUpdateTicked(object? sender, EventArgs e)
         {
-            Context.Clear();
-            Menu = null;
-
             if (!CheckRequirements())
             {
-                Monitor.LogOnce($"{nameof(TreePatch)} attached when requirements are false", LogLevel.Debug);
                 return;
             }
 
+            Context.Clear();
             foreach (var feature in Game1.player.currentLocation.largeTerrainFeatures)
             {
                 if (feature is Bush bush)

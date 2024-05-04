@@ -1,4 +1,5 @@
-﻿using StardewValley;
+﻿using Microsoft.Xna.Framework;
+using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.Objects;
 using Object = StardewValley.Object;
@@ -133,6 +134,79 @@ namespace Predictor.Framework.Extentions
             }
 
             return false;
+        }
+
+        // Unused
+        public static void Predict_cutWeed(this Object obj, PredictionContext _ctx, Farmer who)
+        {
+            GameLocation location = obj.Location;
+            string? text2 = null;
+            if (_ctx.Random.NextBool())
+            {
+                text2 = "771";
+            }
+            else if (_ctx.Random.NextDouble() < 0.05 + ((who.stats.Get("Book_WildSeeds") != 0) ? 0.04 : 0.0))
+            {
+                text2 = "770";
+            }
+            else if (Game1.currentSeason == "summer" && _ctx.Random.NextDouble() < 0.05 + ((who.stats.Get("Book_WildSeeds") != 0) ? 0.04 : 0.0))
+            {
+                text2 = "MixedFlowerSeeds";
+            }
+
+            if (obj.name.Contains("GreenRainWeeds") && _ctx.Random.NextDouble() < 0.1)
+            {
+                text2 = "Moss";
+            }
+
+            bool isGlass = obj.QualifiedItemId switch
+            {
+                "(O)319" => true,
+                "(O)320" => true,
+                "(O)321" => true,
+                _ => false
+            };
+
+            if (isGlass && _ctx.Random.NextDouble() < 0.0025)
+            {
+                text2 = "338";
+            }
+            else if (isGlass)
+            {
+                text2 = null;
+            }
+
+            if (!isGlass)
+            {
+                if (_ctx.Random.NextDouble() < 1E-05)
+                {
+                    _ctx.AddItemIfNotNull("(H)40");
+                }
+
+                if (_ctx.Random.NextDouble() <= 0.01 && Game1.player.team.SpecialOrderRuleActive("DROP_QI_BEANS"))
+                {
+                    _ctx.AddItemIfNotNull("(O)890");
+                }
+            }
+
+            if (text2 != null)
+            {
+                _ctx.AddItemIfNotNull(text2, 1);
+            }
+
+            if (_ctx.Random.NextDouble() < 0.02)
+            {
+                // location.addJumperFrog(obj.TileLocation);
+            }
+
+            if (location.HasUnlockedAreaSecretNotes(who) && _ctx.Random.NextDouble() < 0.009)
+            {
+                PredictionItem? note = location.Predict_tryToCreateUnseenSecretNote(_ctx, who);
+                if (note != null)
+                {
+                    Game1Extentions.Predict_createItemDebris(_ctx, note, new Vector2(obj.TileLocation.X + 0.5f, obj.TileLocation.Y + 0.75f) * 64f, Game1.player.FacingDirection, location);
+                }
+            }
         }
     }
 }

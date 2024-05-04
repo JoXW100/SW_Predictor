@@ -88,6 +88,7 @@ namespace Predictor.Framework
 
         public static void Draw(SpriteBatch spriteBatch, Texture2D texture, Rectangle sourceRect, Vector2 pos, float scale, int stack = 1, float layer = 0f)
         {
+            var ratio = TextureSize / (float)Math.Max(sourceRect.Width, sourceRect.Height);
             spriteBatch.Draw(texture, pos, sourceRect, Utils.ItemColor, 0f, Vector2.One * 0.5f, scale, SpriteEffects.None, layer);
             if (stack > 1)
             {

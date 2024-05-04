@@ -11,9 +11,12 @@ namespace Predictor.Framework.UI
         protected Vector2 offset;  // horizontal - vertical
         protected Color backgroundColor; // TODO: backgorund object for better customization
         protected int[] layout; // space separated column measurements ("auto", "fill", [number])
+        protected Vector2 childAlignment;
         protected Rectangle? bounds = null;
 
-        public Grid(IEnumerable<IUIElement?>? children = null, Vector4? padding = null, Vector2? spacing = null, Vector2? offset = null, Color? backgroundColor = null, string layout = "auto")
+        public bool IsEmpty => children.All(x => x == null);
+
+        public Grid(IEnumerable<IUIElement?>? children = null, Vector4? padding = null, Vector2? spacing = null, Vector2? offset = null, Color? backgroundColor = null, string layout = "auto", string childAlignment = "left")
         {
             this.children = children?.ToArray() ?? Array.Empty<IUIElement?>();
             this.padding = (padding ?? Vector4.Zero) * ModEntry.Instance.Config.MenuScale;
@@ -21,6 +24,17 @@ namespace Predictor.Framework.UI
             this.offset = offset ?? Vector2.Zero;
             this.backgroundColor = backgroundColor ?? Color.Transparent;
             this.layout = ParseLayout(layout);
+
+            this.childAlignment = childAlignment switch
+            {
+                "center" => new Vector2(0.5f, 0.5f),
+                "top center" => new Vector2(0.5f, 0f),
+                "right" => new Vector2(1f, 0f),
+                "bottom" => new Vector2(0f, 1f),
+                "bottom right" => new Vector2(1f, 1f),
+                "bottom center" => new Vector2(0.5f, 1f),
+                _ => Vector2.Zero,
+            };
         }
 
         private static int[] ParseLayout(string layout)
@@ -33,110 +47,101 @@ namespace Predictor.Framework.UI
             }).ToArray();
         }
 
-        private static int[] CalcLayoutWidths(IUIElement?[] children, int[] layout, int maxWidth)
+        private static Tuple<int[], int[]> CalcLayout(IUIElement?[] children, int[] layout)
         {
-            var fillIndices = new HashSet<int>();
-            var result = new int[layout.Length];
+            var widths = new int[layout.Length];
+            var heights = new int[(children.Length + layout.Length - 1) / layout.Length];
             for (int i = 0; i < layout.Length; i++)
             {
                 var width = layout[i];
                 if (width >= 0)
                 {
-                    result[i] = width;
+                    widths[i] = width;
                 }
-                else if (width == -2)
-                {
-                    fillIndices.Add(i);
-                }
+                // else if (width == -2)
+                // {
+                //     fillIndices.Add(i);
+                // }
             }
 
             int columnIndex = 0;
-            var fillWidth = fillIndices.Count > 0 ? maxWidth / fillIndices.Count : 0;
+            int rowIndex = 0;
             for (int i = 0; i < children.Length; i++)
             {
-                if (columnIndex >= layout.Length)
+                var child = children[i];
+                var width = layout[columnIndex];
+                var bounds = child?.GetBounds() ?? Rectangle.Empty;
+                if (width == -1)
+                {
+                    widths[columnIndex] = Math.Max(widths[columnIndex], bounds.Width);
+                }
+
+                heights[rowIndex] = Math.Max(heights[rowIndex], bounds.Height);
+
+                if (++columnIndex >= layout.Length)
                 {
                     columnIndex = 0;
-                }
-
-                var width = layout[columnIndex];
-                if (width == -1 || (width == -2 && fillWidth < 0))
-                {
-                    var child = children[i];
-                    result[columnIndex] = Math.Max(result[columnIndex], child?.GetBounds().Width ?? 0);
-                }
-
-                columnIndex++;
-            }
-
-            if (fillWidth >= 0)
-            {
-                foreach (var i in fillIndices)
-                {
-                    var width = layout[i];
-                    if (width == -2)
-                    {
-                        result[i] = fillWidth;
-                    }
+                    ++rowIndex;
                 }
             }
 
-            return result;
+            return new Tuple<int[], int[]>(widths, heights);
         }
 
-        public void Update(Vector2? offset = null, int maxWidth = -1)
+        public void Update(Vector2? offset = null)
         {
-            var width = 0f;
-            var height = 0f;
-            var rowWidth = 0f;
-            var rowHeight = 0f;
+            var gridWidth = 0f;
+            var gridHeight = 0f;
             var column = 0;
+            var row = 0;
             var flag = false;
             var innerOffset = new Vector2(padding.Y, padding.X) + Utils.MenuPadding + offset;
-            var layoutWidths = CalcLayoutWidths(children, layout, maxWidth);
+            var innerPos = Vector2.Zero;
+            var gridLayout = CalcLayout(children, layout);
+            var layoutWidths = gridLayout.Item1;
+            var layoutHeights = gridLayout.Item2;
 
             for (int i = 0; i < children.Length; i++)
             {
                 var child = children[i];
-                var childWidth = layoutWidths[column];
+                var rowWidth = layoutWidths[column];
+                var columnHeight = layoutHeights[row];
+
                 if (child is not null)
                 {
-                    child.Update(new Vector2(rowWidth, height) + innerOffset, layoutWidths[column]);
-                    rowHeight = Math.Max(child.GetBounds().Height, rowHeight);
+                    var bounds = child.GetBounds();
+                    var alignment = new Vector2(Math.Max(rowWidth - bounds.Width, 0), Math.Max(columnHeight - bounds.Height, 0)) * childAlignment;
+                    child.Update(innerPos + innerOffset + alignment);
                     flag = true;
                 }
 
-                rowWidth += childWidth;
+                gridWidth = Math.Max(gridWidth, innerPos.X + rowWidth);
+                gridHeight = Math.Max(gridHeight, innerPos.Y + columnHeight);
 
+                // New row
                 if (++column >= layoutWidths.Length)
                 {
                     if (flag)
                     {
-                        width = Math.Max(width, rowWidth);
-                        height += rowHeight;
-
-                        if (i + 1 != children.Length)
-                        {
-                            height += spacing.Y;
-                        }
+                        innerPos.Y += columnHeight + spacing.Y;
                     }
 
-                    rowWidth = 0;
-                    rowHeight = 0;
+                    ++row;
                     column = 0;
+                    innerPos.X = 0;
                     flag = false;
                 }
-                else if (childWidth > 0)
+                else
                 {
-                    rowWidth += spacing.X;
+                    innerPos.X += rowWidth + spacing.X;
                 }
             }
 
-            width = Math.Max(width, rowWidth) + padding.Y + padding.W + Utils.MenuPadding.X * 2;
-            height += rowHeight + padding.X + padding.Z + Utils.MenuPadding.Y * 2;
+            gridWidth += padding.Y + padding.W + Utils.MenuPadding.X * 2;
+            gridHeight += padding.X + padding.Z + Utils.MenuPadding.Y * 2;
 
             var pos = offset ?? Vector2.Zero;
-            this.bounds = new Rectangle((int)pos.X, (int)pos.Y, (int)width, (int)height);
+            this.bounds = new Rectangle((int)pos.X, (int)pos.Y, (int)gridWidth, (int)gridHeight);
         }
 
         public void Draw(SpriteBatch sb)
@@ -150,6 +155,8 @@ namespace Predictor.Framework.UI
             {
                 children[i]?.Draw(sb);
             }
+
+            // sb.DrawBorder(GetBounds(), 1f, color: Color.Red);
         }
 
         public Rectangle GetBounds()

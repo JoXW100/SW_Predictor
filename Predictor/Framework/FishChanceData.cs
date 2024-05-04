@@ -8,9 +8,9 @@
 
         public FishChanceData(float chance, bool bobberInArea, bool isTrash)
         {
-            this.Chance = chance;
-            this.BobberInArea = bobberInArea;
-            this.IsTrash = isTrash;
+            Chance = chance;
+            BobberInArea = bobberInArea;
+            IsTrash = isTrash;
         }
     }
 }

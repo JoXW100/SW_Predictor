@@ -21,7 +21,7 @@ namespace Predictor.Framework.UI
         /// Updates the UI element
         /// </summary>
         /// <param name="offset">The positional offset to update the location of the element</param>
-        public abstract void Update(Vector2? offset = null, int maxWidth = -1);
+        public abstract void Update(Vector2? offset = null);
 
         /// <summary>
         /// Draws the UI element to the given sprite batch

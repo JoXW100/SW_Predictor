@@ -7,11 +7,14 @@ using StardewValley;
 
 namespace Predictor.Patches
 {
-    internal sealed class ObjectPatch : PatchBase
+    public sealed class ObjectPatch : PatchBase
     {
         public override string Name => nameof(ObjectPatch);
 
-        public ObjectPatch(IModHelper helper, IMonitor monitor) : base(helper, monitor) { }
+        public ObjectPatch(IModHelper helper, IMonitor monitor) : base(helper, monitor) 
+        { 
+            
+        }
 
         public override void OnAttach()
         {

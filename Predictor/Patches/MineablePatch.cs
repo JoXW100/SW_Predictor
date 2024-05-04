@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Predictor.Framework;
 using Predictor.Framework.Extentions;
-using Predictor.Framework.UI;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -9,15 +8,13 @@ using StardewValley.Monsters;
 
 namespace Predictor.Patches
 {
-    internal class MineablePatch : PatchBase
+    public sealed class MineablePatch : PatchWithContextBase<PredictionContext>
     {
         public override string Name => nameof(MineablePatch);
 
-        private readonly Dictionary<Vector2, PredictionContext> Context;
-
         public MineablePatch(IModHelper helper, IMonitor monitor) : base(helper, monitor)
         {
-            Context = new();
+            
         }
 
         public override void OnAttach()
@@ -51,6 +48,11 @@ namespace Predictor.Patches
 
         private void OnRendered(object? sender, RenderedWorldEventArgs e)
         {
+            if (!CheckRequirements())
+            {
+                return;
+            }
+
             var spriteBatch = e.SpriteBatch;
             float ratio = Game1.options.zoomLevel != 1f ? 1f : 1f / Game1.options.uiScale;
             float size = Utils.TileSize * ratio;
@@ -93,14 +95,12 @@ namespace Predictor.Patches
 
         private void OnUpdateTicked(object? sender, EventArgs e)
         {
-            Context.Clear();
-
             if (!CheckRequirements())
             {
-                Monitor.LogOnce($"{nameof(MineablePatch)} attached when requirements are false", LogLevel.Debug);
                 return;
             }
 
+            Context.Clear();
             foreach (var (pos, obj) in Game1.player.currentLocation.Objects.Pairs)
             {
                 // Exclude item categories
@@ -135,8 +135,6 @@ namespace Predictor.Patches
                     }
                 }
             }
-
-
         }
     }
 }

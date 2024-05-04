@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Predictor.Framework.Extentions;
 using StardewValley;
 
 namespace Predictor.Framework.UI
@@ -29,6 +30,7 @@ namespace Predictor.Framework.UI
             var bounds = GetBounds();
             var pos = bounds.Location.ToVector2();
             sb.DrawString(this.font, Text, pos, color);
+            // sb.DrawBorder(bounds, 1f, color: Color.Green);
         }
 
         public Rectangle GetBounds()
@@ -40,7 +42,7 @@ namespace Predictor.Framework.UI
             return this.bounds ?? Rectangle.Empty;
         }
 
-        public void Update(Vector2? offset = null, int maxWidth = -1)
+        public void Update(Vector2? offset = null)
         {
             var pos = offset ?? Vector2.Zero;
             var size = this.font.MeasureString(this.Text) * ModEntry.Instance.Config.MenuScale;

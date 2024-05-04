@@ -9,6 +9,12 @@ using Predictor.Framework.Config;
 
 namespace Predictor
 {
+    internal class MultiplayerRootContext
+    {
+        public Group? RootUIElement = null;
+        public Vector2 CursorPosition = Vector2.Zero;
+    }
+
     public class ModEntry : Mod
     {
         private static ModEntry? _instance;
@@ -20,15 +26,57 @@ namespace Predictor
 
         public ModConfig Config { get; private set; } = new ModConfig();
 
+        internal MultiplayerManager<MultiplayerRootContext> MultiplayerManager = new();
         private List<IPatch> Patches = new();
-
-        private Grid? rootUIElement = null;
-        private Vector2 cursorPosition = Vector2.Zero;
+        private Group? RootUIElement
+        {
+            get
+            {
+                if (MultiplayerManager.TryGetValue(out var context))
+                {
+                    return context.RootUIElement;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                if (MultiplayerManager.TryGetValue(out var context))
+                {
+                    context.RootUIElement = value;
+                }
+            }
+        }
+        private Vector2 CursorPosition
+        {
+            get
+            {
+                if (MultiplayerManager.TryGetValue(out var context))
+                {
+                    return context.CursorPosition;
+                }
+                else
+                {
+                    return Vector2.Zero;
+                }
+            }
+            set
+            {
+                if (MultiplayerManager.TryGetValue(out var context))
+                {
+                    context.CursorPosition = value;
+                }
+            }
+        }
+        private bool EventsRegistered = false;
 
         public override void Entry(IModHelper helper)
         {
             Instance = this;
-            Config = this.Helper.ReadConfig<ModConfig>();
+            Config = helper.ReadConfig<ModConfig>();
+            MultiplayerManager.Init(helper);
             Patches = new List<IPatch>()
             {
                 new ObjectPatch(helper, Monitor),
@@ -43,25 +91,15 @@ namespace Predictor
                 new SpawnedPatch(helper, Monitor),
                 new BushPatch(helper, Monitor),
                 new PanningPatch(helper, Monitor),
+                new MinigamesPatch(helper, Monitor),
             };
 
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
             helper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
             helper.Events.Input.ButtonPressed += OnButtonPressed;
-            helper.Events.Display.RenderedHud += OnRendered;
-            helper.Events.Input.CursorMoved += OnCursorMoved;
 
             Config.PropertyChanged += OnConfigPropertyChanged;
-
-            if (Config.LazyUpdates)
-            {
-                helper.Events.GameLoop.OneSecondUpdateTicked += OnUpdate;
-            }
-            else
-            {
-                helper.Events.GameLoop.UpdateTicked += OnUpdate;
-            }
         }
 
         private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
@@ -75,12 +113,19 @@ namespace Predictor
             RegisterModConfig(configMenu);
         }
 
+        private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
+        {
+            if (!Config.Enabled)
+            {
+                return;
+            }
+
+            SubscribeEventHandlers();
+        }
+
         private void OnReturnedToTitle(object? sender, ReturnedToTitleEventArgs e)
         {
-            foreach (var patch in Patches)
-            {
-                patch.Detatch();
-            }
+            UnsubscribeEventHandlers();
         }
 
         private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
@@ -91,34 +136,17 @@ namespace Predictor
             }
         }
 
-        private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
-        {
-            if (Config.Enabled)
-            {
-                foreach (var patch in Patches)
-                {
-                    patch.Attach();
-                }
-            }
-        }
-
         private void OnConfigPropertyChanged(object? sender, ProperyChangedEventArgs e)
         {
             if (e.Name == nameof(ModConfig.Enabled))
             {
                 if ((bool)e.Value)
                 {
-                    foreach (var patch in Patches)
-                    {
-                        patch.Attach();
-                    }
+                    SubscribeEventHandlers();
                 }
                 else
                 {
-                    foreach (var patch in Patches)
-                    {
-                        patch.Detatch();
-                    }
+                    UnsubscribeEventHandlers();
                 }
             }
             else if (Config.Enabled)
@@ -133,24 +161,33 @@ namespace Predictor
 
         private void OnRendered(object? sender, RenderedHudEventArgs e)
         {
-            rootUIElement?.Draw(e.SpriteBatch);
-            rootUIElement?.GetChildAt(cursorPosition)?.DrawTooltips(e.SpriteBatch);
+            RootUIElement?.Draw(e.SpriteBatch);
+            RootUIElement?.GetChildAt(CursorPosition)?.DrawTooltips(e.SpriteBatch);
         }
 
         private void OnCursorMoved(object? sender, CursorMovedEventArgs e)
         {
-            cursorPosition = e.NewPosition.ScreenPixels * Game1.options.zoomLevel / Game1.options.uiScale;
+            CursorPosition = e.NewPosition.ScreenPixels * Game1.options.zoomLevel / Game1.options.uiScale;
         }
 
         private void OnUpdate(object? sender, EventArgs e)
         {
-            var offset = Vector2.One * 4 + new Vector2(Config.MenuOffsetX, Config.MenuOffsetY);
-            rootUIElement = new Grid(
-                children: Patches.Select(x => x.GetMenu()),
-                spacing: Vector2.One * 4,
-                layout: string.Join(" ", Enumerable.Repeat("auto", Patches.Count))
+            var children = Patches.Select(x => x.GetMenu());
+            var offset = Config.GetMenuOffset();
+            var root = new Group(
+                children: children,
+                spacing: 4f
             );
-            rootUIElement.Update(offset);
+
+            if (!root.IsEmpty)
+            {
+                RootUIElement = root;
+                RootUIElement.Update(offset);
+            }
+            else
+            {
+                RootUIElement = null;
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -163,7 +200,49 @@ namespace Predictor
                 }
             }
         }
-    
+
+        private void UnsubscribeEventHandlers()
+        {
+            MultiplayerManager.ClearConnections();
+            if (EventsRegistered)
+            {
+                EventsRegistered = false;
+                Helper.Events.Display.RenderedHud -= OnRendered;
+                Helper.Events.Input.CursorMoved -= OnCursorMoved;
+                Helper.Events.GameLoop.OneSecondUpdateTicked -= OnUpdate;
+                Helper.Events.GameLoop.UpdateTicked -= OnUpdate;
+            }
+
+            foreach (var patch in Patches)
+            {
+                patch.Detatch();
+            }
+        }
+
+        private void SubscribeEventHandlers()
+        {
+            if (!EventsRegistered)
+            {
+                EventsRegistered = true;
+                Helper.Events.Display.RenderedHud += OnRendered;
+                Helper.Events.Input.CursorMoved += OnCursorMoved;
+
+                if (Config.LazyUpdates)
+                {
+                    Helper.Events.GameLoop.OneSecondUpdateTicked += OnUpdate;
+                }
+                else
+                {
+                    Helper.Events.GameLoop.UpdateTicked += OnUpdate;
+                }
+            }
+            
+            foreach (var patch in Patches)
+            {
+                patch.Attach();
+            }
+        }
+
         private void RegisterModConfig(IGenericModConfigMenuApi menu)
         {
             #region Setup
@@ -179,6 +258,7 @@ namespace Predictor
             menu.AddPageLink(ModManifest, "outlines", () => Helper.Translation.Get("config.outlines.title"));
             menu.AddPageLink(ModManifest, "trackers", () => Helper.Translation.Get("config.trackers.title"));
             menu.AddPageLink(ModManifest, "fishing", () => Helper.Translation.Get("config.fishing.title"));
+            menu.AddPageLink(ModManifest, "minigames", () => Helper.Translation.Get("config.minigames.title"));
             menu.AddPageLink(ModManifest, "menu", () => Helper.Translation.Get("config.menu.title"));
             #endregion
 
@@ -411,6 +491,13 @@ namespace Predictor
             );
             menu.AddBoolOption(
                 mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.TrackBreakableContainers)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackBreakableContainers)}.desc"),
+                getValue: () => Config.TrackBreakableContainers,
+                setValue: value => Config.SetProperty(ref Config.TrackBreakableContainers, value, nameof(Config.TrackBreakableContainers))
+            );
+            menu.AddBoolOption(
+                mod: ModManifest,
                 name: () => Helper.Translation.Get($"options.{nameof(Config.TrackDigSpots)}"),
                 tooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackDigSpots)}.desc"),
                 getValue: () => Config.TrackDigSpots,
@@ -532,6 +619,28 @@ namespace Predictor
             );
             #endregion
 
+            #region Minigames
+
+            #endregion
+            menu.AddPage(
+                mod: ModManifest,
+                pageId: "minigames",
+                pageTitle: () => Helper.Translation.Get("config.minigames.title")
+            );
+            menu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowCalicoJackOutcome)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowCalicoJackOutcome)}.desc"),
+                getValue: () => Config.ShowCalicoJackOutcome,
+                setValue: value => Config.SetProperty(ref Config.ShowCalicoJackOutcome, value, nameof(Config.ShowCalicoJackOutcome))
+            );
+            menu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowSlotsOutcome)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowSlotsOutcome)}.desc"),
+                getValue: () => Config.ShowSlotsOutcome,
+                setValue: value => Config.SetProperty(ref Config.ShowSlotsOutcome, value, nameof(Config.ShowSlotsOutcome))
+            );
             #region Menu
             menu.AddPage(
                 mod: ModManifest,

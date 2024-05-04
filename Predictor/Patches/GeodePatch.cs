@@ -10,9 +10,9 @@ using Object = StardewValley.Object;
 
 namespace Predictor.Patches
 {
-    internal class GeodePatch : PatchBase
+    public sealed class GeodePatch : PatchBase
     {
-        public override string Name => nameof(Name);
+        public override string Name => nameof(GeodePatch);
 
         private readonly Harmony Harmony;
 

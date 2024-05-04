@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Predictor.Framework;
+﻿using Predictor.Framework;
 using Predictor.Framework.Extentions;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -7,15 +6,13 @@ using StardewValley;
 
 namespace Predictor.Patches
 {
-    internal sealed class DigSpotPatch : PatchBase
+    public sealed class DigSpotPatch : PatchWithContextBase<PredictionContext>
     {
         public override string Name => nameof(DigSpotPatch);
 
-        private readonly Dictionary<Vector2, PredictionContext> Context = new();
-
         public DigSpotPatch(IModHelper helper, IMonitor monitor) : base(helper, monitor)
         {
-            Context = new();
+            
         }
 
         public override void OnAttach()
@@ -37,6 +34,7 @@ namespace Predictor.Patches
             Helper.Events.GameLoop.OneSecondUpdateTicked -= OnUpdateTicked;
             Helper.Events.World.ObjectListChanged -= OnUpdateTicked;
             Helper.Events.Display.RenderedWorld -= OnRendered;
+            Menu = null;
         }
 
         public override bool CheckRequirements()
@@ -47,20 +45,20 @@ namespace Predictor.Patches
 
         private void OnRendered(object? sender, RenderedWorldEventArgs e)
         {
-            Utils.DrawContextItems(e.SpriteBatch, Context, ModEntry.Instance.Config.EnableDigSpotItems, ModEntry.Instance.Config.EnableDigSpotOutlines);
+            if (CheckRequirements())
+            {
+                Utils.DrawContextItems(e.SpriteBatch, Context, ModEntry.Instance.Config.EnableDigSpotItems, ModEntry.Instance.Config.EnableDigSpotOutlines);
+            }
         }
 
         private void OnUpdateTicked(object? sender, EventArgs e)
         {
-            Context.Clear();
-            Menu = null;
-
             if (!CheckRequirements())
             {
-                Monitor.LogOnce($"{nameof(DigSpotPatch)} attached when requirements are false", LogLevel.Debug);
                 return;
             }
 
+            Context.Clear();
             foreach (var (pos, obj) in Game1.player.currentLocation.Objects.Pairs)
             {
                 var location = pos.ToLocation();

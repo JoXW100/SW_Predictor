@@ -19,7 +19,7 @@ namespace Predictor.Framework
         public static Vector2 MenuPadding => ModEntry.Instance.Config.MenuType == 1
             ? Vector2.Zero
             : Vector2.One * ModEntry.Instance.Config.MenuScale * 4f;
-        public static Color ItemColor => new Color(1f, 1f, 1f, 0.8f);
+        public static Color ItemColor => new(1f, 1f, 1f, 0.8f);
         public static Color TextColor => ModEntry.Instance.Config.MenuType == 1
             ? Color.White
             : Color.Black;
@@ -54,7 +54,7 @@ namespace Predictor.Framework
 
         public static void DrawContextItems(SpriteBatch spriteBatch, Dictionary<Vector2, PredictionContext> context, bool drawItems = true, bool drawOutline = false, int width = 1)
         {
-            if (context.Count < 1 || (!drawItems && !drawOutline))
+            if ((!drawItems && !drawOutline) || context.Count < 1)
             {
                 return;
             }
@@ -166,7 +166,7 @@ namespace Predictor.Framework
                 ? ModEntry.Instance.Config.TrackerMenuMaxItemCount
                 : int.MaxValue;
             Vector2[] positions = context.Keys.OrderBy(p => (p - Game1.player.Tile).Length()).ToArray();
-            PredictionContext[] items = positions.Select(k => context[k]).ToArray();
+            PredictionContext[] items = positions.Select(k => context[k]).Where(k => !k.Items.EmptyOrNull()).ToArray();
 
             IUIElement? excessLabel = null;
             List<IUIElement?> children = new();
@@ -219,7 +219,7 @@ namespace Predictor.Framework
                 return null;
             }
 
-            var headerText = ModEntry.Instance.Helper.Translation.Get(headerTranslationId);
+            var headerText = string.Format("{0}:", ModEntry.Instance.Helper.Translation.Get(headerTranslationId));
             return new Grid(
                 children: new[]
                 {
@@ -227,7 +227,7 @@ namespace Predictor.Framework
                     new Grid(children: children, spacing: Vector2.One * 2, layout: "auto auto auto auto"),
                     excessLabel
                 },
-                padding: Vector4.One * 6 * Utils.UIScale,
+                padding: Vector4.One * 6 * Utils.UIScale, 
                 spacing: Vector2.One * 2,
                 backgroundColor: Utils.MenuBackground
             );

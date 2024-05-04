@@ -31,9 +31,10 @@ namespace Predictor.Framework.UI
                 var circleOffset = positions[i] * PredictionItem.TextureSize * 0.25f;
                 spawn.Draw(sb, pos + centerOffset + (circleOffset - scaleOffset) * s, scale * s);
             }
+            // sb.DrawBorder(bounds, 1f, color: Color.Blue);
         }
 
-        public void Update(Vector2? offset = null, int maxWidth = -1)
+        public void Update(Vector2? offset = null)
         {
             var pos = offset ?? Vector2.Zero;
             var size = PredictionItem.TextureSize * scale;

@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Predictor.Framework;
+﻿using Predictor.Framework;
 using Predictor.Framework.Extentions;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -8,15 +7,13 @@ using StardewValley.Objects;
 
 namespace Predictor.Patches
 {
-    public class BreakableContainerPatch : PatchBase
+    public sealed class BreakableContainerPatch : PatchWithContextBase<PredictionContext>
     {
         public override string Name => nameof(BreakableContainerPatch);
 
-        private readonly Dictionary<Vector2, PredictionContext> Context;
-
         public BreakableContainerPatch(IModHelper helper, IMonitor monitor) : base(helper, monitor)
         {
-            Context = new();
+
         }
 
         public override void OnAttach()
@@ -38,34 +35,41 @@ namespace Predictor.Patches
             Helper.Events.GameLoop.OneSecondUpdateTicked -= OnUpdateTicked;
             Helper.Events.World.ObjectListChanged -= OnUpdateTicked;
             Helper.Events.Display.RenderedWorld -= OnRendered;
+            Menu = null;
         }
 
         public override bool CheckRequirements()
         {
             return base.CheckRequirements()
-                && (ModEntry.Instance.Config.EnableBreakableContainerItems || ModEntry.Instance.Config.EnableBreakableContainerOutlines);
+                && (ModEntry.Instance.Config.EnableBreakableContainerItems || ModEntry.Instance.Config.EnableBreakableContainerOutlines || ModEntry.Instance.Config.TrackBreakableContainers);
         }
 
         private void OnRendered(object? sender, RenderedWorldEventArgs e)
         {
-            Utils.DrawContextItems(e.SpriteBatch, Context, ModEntry.Instance.Config.EnableBreakableContainerItems, ModEntry.Instance.Config.EnableBreakableContainerOutlines);
+            if (CheckRequirements())
+            {
+                Utils.DrawContextItems(e.SpriteBatch, Context, ModEntry.Instance.Config.EnableBreakableContainerItems, ModEntry.Instance.Config.EnableBreakableContainerOutlines);
+            }
         }
 
         private void OnUpdateTicked(object? sender, EventArgs e)
         {
-            Context.Clear();
-
             if (!CheckRequirements())
             {
-                Monitor.LogOnce($"{nameof(BreakableContainer)} attached when requirements are false", LogLevel.Debug);
                 return;
             }
 
+            Context.Clear();
             foreach (var (pos, obj) in Game1.player.currentLocation.Objects.Pairs)
             {
                 // skip non-stone objects too far away.
                 var location = pos.ToLocation();
-                if (!Game1.viewport.Contains(location * Utils.TileSize))
+                if (!ModEntry.Instance.Config.TrackBreakableContainers && !Game1.viewport.Contains(location * Utils.TileSize))
+                {
+                    continue;
+                }
+
+                if (!obj.IsBreakableContainer())
                 {
                     continue;
                 }
@@ -84,7 +88,7 @@ namespace Predictor.Patches
                     }
                 }
 
-                if (ctx.Items.Any() || ModEntry.Instance.Config.EnableBreakableContainerOutlines && obj.IsBreakableContainer())
+                if (ctx.Items.Any() || ModEntry.Instance.Config.EnableBreakableContainerOutlines)
                 {
                     if (Context.TryGetValue(pos, out var current))
                     {
@@ -95,6 +99,11 @@ namespace Predictor.Patches
                         Context.Add(pos, ctx);
                     }
                 }
+            }
+
+            if (ModEntry.Instance.Config.TrackBreakableContainers)
+            {
+                Menu = Utils.CreateNearbyContextItemsMenu(Context, "menu.BreakableContainerHeader");
             }
         }
     }

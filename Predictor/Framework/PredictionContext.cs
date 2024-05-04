@@ -68,7 +68,7 @@ namespace Predictor.Framework
             }
             else
             {
-                throw new ArgumentNullException(nameof(key));
+                throw new NullReferenceException(nameof(key));
             }
         }
     }

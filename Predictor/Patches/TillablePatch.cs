@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using xTile.Dimensions;
 using Predictor.Framework;
-using Predictor.Framework.UI;
 using Predictor.Framework.Extentions;
 using StardewModdingAPI.Events;
 using StardewModdingAPI;
@@ -11,16 +10,13 @@ using StardewValley.TerrainFeatures;
 
 namespace Predictor.Patches
 {
-    internal class TillablePatch : PatchBase
+    public sealed class TillablePatch : PatchWithContextBase<PredictionContext>
     {
-
         public override string Name => nameof(TillablePatch);
-
-        private readonly Dictionary<Vector2, PredictionContext> Context;
 
         public TillablePatch(IModHelper helper, IMonitor monitor) : base(helper, monitor)
         {
-            Context = new();
+            
         }
 
         public override void OnAttach()
@@ -52,7 +48,10 @@ namespace Predictor.Patches
 
         private void OnRendered(object? sender, RenderedWorldEventArgs e)
         {
-            Utils.DrawContextItems(e.SpriteBatch, Context, ModEntry.Instance.Config.EnableTillableItems, ModEntry.Instance.Config.EnableTillableOutlines);
+            if (CheckRequirements())
+            {
+                Utils.DrawContextItems(e.SpriteBatch, Context, ModEntry.Instance.Config.EnableTillableItems, ModEntry.Instance.Config.EnableTillableOutlines);
+            }
         }
 
         private static IEnumerable<Location> GetDiggableTileLocations(GameLocation location)
@@ -81,14 +80,13 @@ namespace Predictor.Patches
 
         private void OnUpdateTicked(object? sender, EventArgs e)
         {
-            Context.Clear();
-
             if (!CheckRequirements())
             {
                 Monitor.LogOnce($"{nameof(TillablePatch)} attached when requirements are false", LogLevel.Debug);
                 return;
             }
 
+            Context.Clear();
             if (Game1.player.CurrentItem is Hoe)
             {
                 foreach (var pos in GetDiggableTileLocations(Game1.currentLocation))

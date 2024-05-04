@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 
 namespace Predictor.Framework
 {
@@ -52,6 +53,7 @@ namespace Predictor.Framework
 
         // Trackers
         public bool TrackHarvestableBushes = true;
+        public bool TrackBreakableContainers = true;
         public bool TrackDigSpots = true;
         public bool TrackSpawned = true;
         public bool TrackPanningSpots = true;
@@ -71,12 +73,21 @@ namespace Predictor.Framework
         public int  NumFishCatches = 1000;
         public bool ShowLessFishInfo = false;
 
+        // Minigame
+        public bool ShowSlotsOutcome = true;
+        public bool ShowCalicoJackOutcome = true;
+
         // Menu
-        public int MenuOffsetX = 0;
-        public int MenuOffsetY = 0;
+        public int MenuOffsetX = 4;
+        public int MenuOffsetY = 4;
         public int MenuType = 0;
         public float MenuScale = 1f;
         public float MenuAlpha = 0.8f;
+
+        public Vector2 GetMenuOffset()
+        {
+            return new Vector2(MenuOffsetX, MenuOffsetY);
+        }
 
         public void SetProperty<T>(ref T property, T value, string name) where T : notnull
         {

@@ -26,6 +26,8 @@ namespace Predictor.Framework.UI
             var arrowPos = arrowCenter + (direction / distance) * 12f;
             var arrowRect = new Rectangle(412, 495, 5, 4);
             sb.Draw(Game1.mouseCursors, arrowPos, arrowRect, Color.White, (float)(Game1.player.Tile.Angle(Location) + Math.PI / 2), new Vector2(2.25f, 3f), 2.4f, 0, 1f);
+            
+            // sb.DrawBorder(bounds, 1f, color: Color.Blue);
         }
     }
 }

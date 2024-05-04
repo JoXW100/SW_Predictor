@@ -438,8 +438,9 @@ namespace Predictor.Framework.Extentions
         {
             _ctx.Properties.TryAdd(PredictionProperty.FishChanceData, new Dictionary<string, FishChanceData>());
             _ctx.Properties.TryAdd(PredictionProperty.ChanceBase, 1f);
+            _ctx.Properties.TryAdd(PredictionProperty.TrashChance, 0f);
 
-            var fish = location.getFish(millisecondsAfterNibble, bait, waterDepth, who, baitPotency, bobberTile, locationName);
+            // var fish = location.getFish(millisecondsAfterNibble, bait, waterDepth, who, baitPotency, bobberTile, locationName);
 
             if (location is MineShaft mine)
             {
@@ -603,7 +604,6 @@ namespace Predictor.Framework.Extentions
                 continueChance *= (1 - chance);
             }
 
-            var trashChance = 1f;
             float chanceSum = Enumerable.Sum(chances) + continueChance;
             for (int i = 0; i < spawns.Length; i++)
             {
@@ -614,11 +614,6 @@ namespace Predictor.Framework.Extentions
                 var ids = isTrash && spawn.RandomItemId != null
                     ? spawn.RandomItemId
                     : new List<string>() { spawn.ItemId };
-
-                if (!isTrash)
-                {
-                    trashChance *= (1 - chance);
-                }
 
                 chance /= chanceSum;
 
@@ -641,15 +636,6 @@ namespace Predictor.Framework.Extentions
                 }
             }
 
-            if (_ctx.Properties.TryGetValue(PredictionProperty.TrashChance, out var res))
-            {
-                _ctx.Properties[PredictionProperty.TrashChance] = (float)res + trashChance;
-            }
-            else
-            {
-                _ctx.Properties[PredictionProperty.TrashChance] = trashChance;
-            }
-
             if (isTutorialCatch)
             {
                 var item = _ctx.AddItemIfNotNull("(O)145");
@@ -657,6 +643,18 @@ namespace Predictor.Framework.Extentions
                 {
                     _ctx.GetPropertyValue<Dictionary<string, FishChanceData>>(PredictionProperty.FishChanceData)
                         .TryAdd(item.ItemId, new FishChanceData(continueChance, true, false));
+                }
+                _ctx.Properties[PredictionProperty.TrashChance] = 0f;
+            }
+            else
+            {
+                if (_ctx.Properties.TryGetValue(PredictionProperty.TrashChance, out var res))
+                {
+                    _ctx.Properties[PredictionProperty.TrashChance] = (float)res + continueChance;
+                }
+                else
+                {
+                    _ctx.Properties[PredictionProperty.TrashChance] = continueChance;
                 }
             }
         }

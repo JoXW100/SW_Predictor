@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Predictor.Framework;
+﻿using Predictor.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -7,15 +6,13 @@ using StardewValley.TerrainFeatures;
 
 namespace Predictor.Patches
 {
-    internal sealed class SpawnedPatch : PatchBase
+    public sealed class SpawnedPatch : PatchWithContextBase<PredictionItem>
     {
         public override string Name => nameof(SpawnedPatch);
 
-        private readonly Dictionary<Vector2, PredictionItem> Context;
-
         public SpawnedPatch(IModHelper helper, IMonitor monitor) : base(helper, monitor)
         {
-            Context = new();
+            
         }
 
         public override void OnAttach()
@@ -39,6 +36,7 @@ namespace Predictor.Patches
             Helper.Events.World.ObjectListChanged -= OnUpdateTicked;
             Helper.Events.World.TerrainFeatureListChanged -= OnUpdateTicked;
             Helper.Events.Display.RenderedWorld -= OnRendered;
+            Menu = null;
         }
 
         public override bool CheckRequirements()
@@ -49,7 +47,7 @@ namespace Predictor.Patches
 
         private void OnRendered(object? sender, RenderedWorldEventArgs e)
         {
-            if (ModEntry.Instance.Config.EnableSpawnedOutlines)
+            if (CheckRequirements() && ModEntry.Instance.Config.EnableSpawnedOutlines)
             {
                 Utils.DrawOutlines(e.SpriteBatch, Context.Keys);
             }
@@ -57,15 +55,12 @@ namespace Predictor.Patches
 
         private void OnUpdateTicked(object? sender, EventArgs e)
         {
-            Context.Clear();
-            Menu = null;
-
             if (!CheckRequirements())
             {
-                Monitor.LogOnce($"{nameof(SpawnedPatch)} attached when requirements are false", LogLevel.Debug);
                 return;
             }
 
+            Context.Clear();
             foreach (var (pos, obj) in Game1.player.currentLocation.Objects.Pairs)
             {
                 if (obj.IsSpawnedObject)

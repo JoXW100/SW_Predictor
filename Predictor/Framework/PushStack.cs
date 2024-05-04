@@ -2,14 +2,19 @@
 
 namespace Predictor.Framework
 {
-    class PushStack<T> : IEnumerable<T>
+    public class PushStack<T> : IEnumerable<T>
     {
         private int pointer;
         private int first;
-        private T[] data;
+        private readonly T[] data;
 
         public int Size => data.Length;
 
+        /// <summary>
+        /// Creates a <see cref="PushStack"/>
+        /// </summary>
+        /// <param name="size">The number of items the push stack is limitied to contain, must be greater than 0.</param>
+        /// <exception cref="ArgumentOutOfRangeException">If the size is outside the valid range.</exception>
         public PushStack(int size)
         {
             if (size <= 0)
@@ -22,6 +27,10 @@ namespace Predictor.Framework
             this.first = this.data.Length - 1;
         }
 
+        /// <summary>
+        /// Pushes <paramref name="item"/> to the end of the stack, removing the leading item if the stack would exceed <see cref="Size"/>.
+        /// </summary>
+        /// <param name="item">The item to add to the stack</param>
         public void Push(T item)
         {
             if (++this.pointer >= Size)
@@ -40,21 +49,52 @@ namespace Predictor.Framework
             this.data[this.pointer] = item;
         }
 
-        public T Peak()
+        /// <summary>
+        /// Gets the value of the first value in the stack.
+        /// </summary>
+        /// <returns>The first value in the stack.</returns>
+        /// <exception cref="NullReferenceException">If no value exists in the stack.</exception>
+        public T PeakFirst()
         {
             if (this.pointer < 0)
             {
-                throw new ArgumentOutOfRangeException();
+                throw new NullReferenceException();
+            }
+            var ptr = this.first + 1;
+            if (ptr >= Size)
+            {
+                ptr = 0;
+            }
+            return data[ptr];
+        }
+
+        /// <summary>
+        /// Gets the value of the last value in the stack.
+        /// </summary>
+        /// <returns>The last value in the stack.</returns>
+        /// <exception cref="NullReferenceException">If no value exists in the stack.</exception>
+        public T PeakLast()
+        {
+            if (this.pointer < 0)
+            {
+                throw new NullReferenceException();
             }
             return data[this.pointer];
         }
 
+        /// <summary>
+        /// Clears the content of the stack.
+        /// </summary>
         public void Clear()
         {
             this.pointer = -1;
             this.first = Size - 1;
         }
 
+        /// <summary>
+        /// Finds the number of item in the stack.
+        /// </summary>
+        /// <returns>The number of item in the stack</returns>
         public int Count()
         {
             if (this.pointer < 0)
