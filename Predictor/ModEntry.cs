@@ -30,45 +30,13 @@ namespace Predictor
         private List<IPatch> Patches = new();
         private Group? RootUIElement
         {
-            get
-            {
-                if (MultiplayerManager.TryGetValue(out var context))
-                {
-                    return context.RootUIElement;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                if (MultiplayerManager.TryGetValue(out var context))
-                {
-                    context.RootUIElement = value;
-                }
-            }
+            get => MultiplayerManager.GetValue().RootUIElement;
+            set => MultiplayerManager.GetValue().RootUIElement = value;
         }
         private Vector2 CursorPosition
         {
-            get
-            {
-                if (MultiplayerManager.TryGetValue(out var context))
-                {
-                    return context.CursorPosition;
-                }
-                else
-                {
-                    return Vector2.Zero;
-                }
-            }
-            set
-            {
-                if (MultiplayerManager.TryGetValue(out var context))
-                {
-                    context.CursorPosition = value;
-                }
-            }
+            get => MultiplayerManager.GetValue().CursorPosition;
+            set => MultiplayerManager.GetValue().CursorPosition = value;
         }
         private bool EventsRegistered = false;
 

@@ -7,7 +7,6 @@ using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Tools;
 using StardewValley.TokenizableStrings;
-using System.Diagnostics;
 using Object = StardewValley.Object;
 
 namespace Predictor.Patches
@@ -24,44 +23,13 @@ namespace Predictor.Patches
         public override string Name => nameof(FishingPatch);
         private long PredictionIdentifier
         {
-            get
-            {
-                if (MultiplayerManager.TryGetValue(out var context))
-                {
-                    return context.PredictionIdentifier;
-                }
-                else
-                {
-                    Debug.Assert(false);
-                    return new();
-                }
-            }
-            set
-            {
-                if (MultiplayerManager.TryGetValue(out var context))
-                {
-                    context.PredictionIdentifier = value;
-                }
-                else
-                {
-                    Debug.Assert(false);
-                }
-            }
+            get => MultiplayerManager.GetValue().PredictionIdentifier;
+            set => MultiplayerManager.GetValue().PredictionIdentifier = value;
         }
         private PushStack<string> Catches
         {
-            get
-            {
-                if (MultiplayerManager.TryGetValue(out var context))
-                {
-                    return context.Catches;
-                }
-                else
-                {
-                    Debug.Assert(false);
-                    return new PushStack<string>(1);
-                }
-            }
+            get => MultiplayerManager.GetValue().Catches;
+            set => MultiplayerManager.GetValue().Catches = value;
         }
         private static Vector2 Spacing => Vector2.One * 2f;
         private static readonly PredictionItem TrashCan = PredictionItem.Create("2427")!;

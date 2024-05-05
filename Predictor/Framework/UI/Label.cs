@@ -30,7 +30,9 @@ namespace Predictor.Framework.UI
             var bounds = GetBounds();
             var pos = bounds.Location.ToVector2();
             sb.DrawString(this.font, Text, pos, color);
-            // sb.DrawBorder(bounds, 1f, color: Color.Green);
+#if DEBUG
+            sb.DrawBorder(GetBounds(), 1f, color: Color.Green);
+#endif
         }
 
         public Rectangle GetBounds()

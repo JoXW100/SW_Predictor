@@ -7,12 +7,13 @@ namespace Predictor.Framework
 {
     public sealed class MultiplayerManager<T> where T : class
     {
-        private readonly Dictionary<long, T> MultiplayerContexts = new();
+        private readonly Dictionary<long, T> MultiplayerContexts;
         private IModHelper? Helper;
 
         public MultiplayerManager(IModHelper? helper = null)
         {
             Helper = helper;
+            MultiplayerContexts = new();
             if (Helper is not null)
             {
                 Helper.Events.Multiplayer.PeerConnected += OnPeerConnected;
@@ -55,41 +56,38 @@ namespace Predictor.Framework
         }
 
         /// <summary>
-        /// Checks if the current active <see cref="Game1.player"/> exists in the multiplayer contexts.
-        /// </summary>
-        /// <returns>True if <see cref="Game1.player"/> exists in the multiplayer contexts</returns>
-        public bool IsConnected()
-        {
-            return Context.IsMainPlayer || MultiplayerContexts.ContainsKey(Game1.player.UniqueMultiplayerID);
-        }
-
-        /// <summary>
         /// Gets the context of the corrent active <see cref="Game1.player"/> if <see cref="Game1.player"/> is connected.
         /// </summary>
         /// <param name="context">The context of the corrent active <see cref="Game1.player"/></param>
         /// <returns>True if <see cref="Game1.player"/> is connected, False otherwise.</returns>
         public bool TryGetValue([MaybeNullWhen(false)] out T context)
         {
-            if (Context.IsMainPlayer)
-            {
-                if (!MultiplayerContexts.TryGetValue(0, out context))
-                {
-                    context = MultiplayerContexts[0] = Activator.CreateInstance<T>();
-                }
-                return true;
-            }
+            return MultiplayerContexts.TryGetValue(Context.ScreenId, out context);
+        }
 
-            return MultiplayerContexts.TryGetValue(Game1.player.UniqueMultiplayerID, out context);
+        public T GetValue()
+        {
+            if (MultiplayerContexts.TryGetValue(Context.ScreenId, out var context))
+            {
+                return context;
+            }
+            return MultiplayerContexts[Context.ScreenId] = Activator.CreateInstance<T>();
         }
 
         private void OnPeerConnected(object? sender, PeerConnectedEventArgs e)
         {
-            MultiplayerContexts[e.Peer.PlayerID] = Activator.CreateInstance<T>();
+            if (e.Peer.IsSplitScreen)
+            {
+                MultiplayerContexts[e.Peer.ScreenID ?? 0] = Activator.CreateInstance<T>();
+            }
         }
 
         private void OnPeerDisconnected(object? sender, PeerDisconnectedEventArgs e)
         {
-            MultiplayerContexts.Remove(e.Peer.PlayerID);
+            if (e.Peer.IsSplitScreen)
+            {
+                MultiplayerContexts.Remove(e.Peer.ScreenID ?? 0);
+            }
         }
     }
 }

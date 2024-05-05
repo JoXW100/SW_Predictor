@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Predictor.Framework.Extentions;
 
 namespace Predictor.Framework.UI
 {
@@ -33,6 +34,10 @@ namespace Predictor.Framework.UI
             {
                 children[i]?.Draw(sb);
             }
+
+#if DEBUG
+            sb.DrawBorder(GetBounds(), 1f, color: Color.Red);
+#endif
         }
 
         public void DrawTooltips(SpriteBatch sb) { }
@@ -74,11 +79,14 @@ namespace Predictor.Framework.UI
                     var bounds = child.GetBounds();
 
                     gridWidth = Math.Max(gridWidth, innerPos.X + bounds.Width);
-                    gridHeight = Math.Max(gridHeight, bounds.Y);
+                    gridHeight = Math.Max(gridHeight, bounds.Height);
 
                     innerPos.X += bounds.Width + spacing;
                 }
             }
+
+            gridWidth += padding.Y + padding.W + Utils.MenuPadding.X * 2;
+            gridHeight += padding.X + padding.Z + Utils.MenuPadding.Y * 2;
 
             var pos = offset ?? Vector2.Zero;
             this.bounds = new Rectangle((int)pos.X, (int)pos.Y, (int)gridWidth, (int)gridHeight);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Predictor.Framework.Extentions;
 
 namespace Predictor.Framework.UI
 {
@@ -104,26 +105,26 @@ namespace Predictor.Framework.UI
             for (int i = 0; i < children.Length; i++)
             {
                 var child = children[i];
-                var rowWidth = layoutWidths[column];
-                var columnHeight = layoutHeights[row];
+                var columnWidth = layoutWidths[column];
+                var rowHeight = layoutHeights[row];
 
                 if (child is not null)
                 {
                     var bounds = child.GetBounds();
-                    var alignment = new Vector2(Math.Max(rowWidth - bounds.Width, 0), Math.Max(columnHeight - bounds.Height, 0)) * childAlignment;
+                    var alignment = new Vector2(Math.Max(columnWidth - bounds.Width, 0), Math.Max(rowHeight - bounds.Height, 0)) * childAlignment;
                     child.Update(innerPos + innerOffset + alignment);
                     flag = true;
                 }
 
-                gridWidth = Math.Max(gridWidth, innerPos.X + rowWidth);
-                gridHeight = Math.Max(gridHeight, innerPos.Y + columnHeight);
+                gridWidth = Math.Max(gridWidth, innerPos.X + columnWidth);
+                gridHeight = Math.Max(gridHeight, innerPos.Y + rowHeight);
 
                 // New row
                 if (++column >= layoutWidths.Length)
                 {
                     if (flag)
                     {
-                        innerPos.Y += columnHeight + spacing.Y;
+                        innerPos.Y += rowHeight + spacing.Y;
                     }
 
                     ++row;
@@ -133,7 +134,7 @@ namespace Predictor.Framework.UI
                 }
                 else
                 {
-                    innerPos.X += rowWidth + spacing.X;
+                    innerPos.X += columnWidth + spacing.X;
                 }
             }
 
@@ -156,7 +157,9 @@ namespace Predictor.Framework.UI
                 children[i]?.Draw(sb);
             }
 
-            // sb.DrawBorder(GetBounds(), 1f, color: Color.Red);
+#if DEBUG
+            sb.DrawBorder(GetBounds(), 1f, color: Color.Red);
+#endif
         }
 
         public Rectangle GetBounds()

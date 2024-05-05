@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Predictor.Framework.Extentions;
 using StardewValley;
 
 namespace Predictor.Framework.UI
@@ -31,7 +32,9 @@ namespace Predictor.Framework.UI
                 var circleOffset = positions[i] * PredictionItem.TextureSize * 0.25f;
                 spawn.Draw(sb, pos + centerOffset + (circleOffset - scaleOffset) * s, scale * s);
             }
-            // sb.DrawBorder(bounds, 1f, color: Color.Blue);
+#if DEBUG
+            sb.DrawBorder(GetBounds(), 1f, color: Color.Coral);
+#endif
         }
 
         public void Update(Vector2? offset = null)

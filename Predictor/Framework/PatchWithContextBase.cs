@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Predictor.Framework.UI;
 using StardewModdingAPI;
-using System.Diagnostics;
 
 namespace Predictor.Framework
 {
@@ -18,21 +17,7 @@ namespace Predictor.Framework
 
     public abstract class PatchWithContextBase<T> : PatchWithMenuBase<PatchContext<T>>
     {
-        protected Dictionary<Vector2, T> Context
-        {
-            get
-            {
-                if (MultiplayerManager.TryGetValue(out var context))
-                {
-                    return context.Context;
-                }
-                else
-                {
-                    Debug.Assert(false);
-                    return new();
-                }
-            }
-        }
+        protected Dictionary<Vector2, T> Context => MultiplayerManager.GetValue().Context;
 
         protected PatchWithContextBase(IModHelper helper, IMonitor monitor) : base(helper, monitor)
         {

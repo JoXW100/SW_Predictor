@@ -19,10 +19,5 @@ namespace Predictor.Framework
             }
             base.Detatch();
         }
-
-        public override bool CheckRequirements()
-        {
-            return base.CheckRequirements() && MultiplayerManager.IsConnected();
-        }
     }
 }
