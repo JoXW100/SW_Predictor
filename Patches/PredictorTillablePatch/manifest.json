@@ -1,0 +1,16 @@
+{
+  "Name": "Predictor Tillable Patch",
+  "Author": "JoXW",
+  "Version": "1.0.0",
+  "Description": "Predicts item drops from tillable tiles.",
+  "UniqueID": "JoXW.PredictorTillablePatch",
+  "EntryDll": "PredictorTillablePatch.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:21332@TillablePatch" ],
+  "Dependencies": [
+    {
+      "UniqueID": "JoXW.Predictor",
+      "IsRequired": true
+    }
+  ]
+}

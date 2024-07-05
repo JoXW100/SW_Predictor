@@ -1,0 +1,16 @@
+{
+  "config.general.title": "General",
+
+  "menu.SlotsWinMultiplierLabel": "Win Multiplier: {0}x",
+  "menu.CalicoNextHitPlayerCardLabel": "Next 'Hit' Player card: {0}",
+  "menu.CalicoNextHitDealerCardLabel": "Next 'Hit' Dealer card: {0}",
+  "menu.CalicoNextStandOutcomeLabel.win": "Next 'Stand' Outcome: Win",
+  "menu.CalicoNextStandOutcomeLabel.loss": "Next 'Stand' Outcome: Loss",
+
+  "options.Enabled": "Enabled",
+  "options.Enabled.desc": "Enables/Disables this patch.",
+  "options.ShowSlotsOutcomes": "Show Slots outcome",
+  "options.ShowSlotsOutcomes.desc": "Shows Win multiplier for Calico Slots, 0x means a loss. The multiplier changes over time.",
+  "options.ShowCalicoJackOutcomes": "Show Calico Jack outcomes",
+  "options.ShowCalicoJackOutcomes.desc": "Shows the next cards drawn when using 'Hit', and the result if using 'Stand'."
+}

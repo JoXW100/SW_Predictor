@@ -1,0 +1,6 @@
+{
+  "config.general.title": "General",
+
+  "options.Enabled": "Enabled",
+  "options.Enabled.desc": "Enables/Disables this patch."
+}

@@ -1,0 +1,14 @@
+{
+  "config.general.title": "General",
+  "config.features.title": "Features",
+  "options.Enabled": "Enabled",
+  "options.Enabled.desc": "Enables/Disables this patch.",
+  "options.ShowItems": "Show Items",
+  "options.ShowItems.desc": "Draws item icons of predicted drops for mineable objects.",
+  "options.ShowOutlines": "Show Outlines",
+  "options.ShowOutlines.desc": "Draws outlines around mineable objects.",
+  "options.ShowLadders": "Show Ladders",
+  "options.ShowLadders.desc": "Draws ladder/shaft icons where they would spawn.",
+  "options.MonstersHideLadders": "Monsters Hide Ladders",
+  "options.MonstersHideLadders.desc": "Hides ladder locations while monsters are alive."
+}

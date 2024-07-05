@@ -1,0 +1,16 @@
+{
+  "Name": "Predictor Garbage Can Patch",
+  "Author": "JoXW",
+  "Version": "1.0.0",
+  "Description": "Predicts garbage can drops and npc reactions.",
+  "UniqueID": "JoXW.PredictorGarbageCanPatch",
+  "EntryDll": "PredictorGarbageCanPatch.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:21332@GarbageCanPatch" ],
+  "Dependencies": [
+    {
+      "UniqueID": "JoXW.Predictor",
+      "IsRequired": true
+    }
+  ]
+}

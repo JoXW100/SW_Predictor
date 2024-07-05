@@ -1,0 +1,16 @@
+{
+  "Name": "Predictor Minigames Patch",
+  "Author": "JoXW",
+  "Version": "1.0.0",
+  "Description": "Predicts minigame outcomes.",
+  "UniqueID": "JoXW.PredictorMinigamesPatch",
+  "EntryDll": "PredictorMinigamesPatch.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:21332@MinigamesPatch" ],
+  "Dependencies": [
+    {
+      "UniqueID": "JoXW.Predictor",
+      "IsRequired": true
+    }
+  ]
+}

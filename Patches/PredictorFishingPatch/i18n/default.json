@@ -1,0 +1,33 @@
+{
+  "config.general.title": "General",
+  "config.features.title": "Features",
+
+  "menu.FishingHeader": "Fishing Info",
+  "menu.FishingMinigameLabel": "Catching",
+  "menu.FishingBaitLabel": "Bait",
+  "menu.FishingTackleLabel": "Tackle",
+  "menu.FishingTrashChanceLabel": "Trash",
+
+  "options.Enabled": "Enabled",
+  "options.Enabled.desc": "Enables/Disables this patch.",
+  "options.ShowFish": "Show fish",
+  "options.ShowFish.desc": "Shows what fish is being caught in the fishing minigame.",
+  "options.ShowBait": "Show bait",
+  "options.ShowBait.desc": "Show equiped bait when fishing rod is equiped.",
+  "options.ShowTackle": "Show tackle",
+  "options.ShowTackle.desc": "Show equiped tackle when fishing rod is equiped.",
+  "options.ShowFishChances": "Show fish chances",
+  "options.ShowFishChances.desc": "Shows chances to catch available fish when fishing rod is equiped.",
+  "options.ShowTrashChances": "Show trash chances.",
+  "options.ShowTrashChances.desc": "Shows chance to catch different types of trash when fishing rod is equiped.",
+  "options.ShowSecretNoteChances": "Show secret note chances",
+  "options.ShowSecretNoteChances.desc": "Shows chance to catch secret notes when fishing rod is equiped.",
+  "options.ShowUncaughtFish": "Show uncaught fish",
+  "options.ShowUncaughtFish.desc": "Show details about fish that have not been caought yet. If disabled, the uncaught fish are replaced by question marks in the list.",
+  "options.ShowLessFishInfo": "Show less fish info",
+  "options.ShowLessFishInfo.desc": "Only shows icons and chances in fising menu.",
+  "options.EstimateFishChances": "Estimate fish chances",
+  "options.EstimateFishChances.desc": "Estimates fish chances instead of calculating chances by simulating catching fish.",
+  "options.NumFishCatches": "Catch limit",
+  "options.NumFishCatches.desc": "The maximum number of fish to remember when simulating catching fish to calculate fish chances. 'Estimate fish chances' must be off. Requires restart to take effect."
+}

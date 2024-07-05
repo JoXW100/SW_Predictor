@@ -1,26 +1,34 @@
 ﻿using Predictor.Framework;
-using Predictor.Patches;
-using Predictor.Framework.UI;
-using StardewValley;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using Microsoft.Xna.Framework;
-using Predictor.Framework.Config;
+using DynamicUIFramework.Elements;
+using PredictorPatchFramework;
+using DynamicUIFramework;
 
 namespace Predictor
 {
     internal class MultiplayerRootContext
     {
-        public Group? RootUIElement = null;
-        public Vector2 CursorPosition = Vector2.Zero;
+        public Group RootUIElement;
+        public IUIDrawable? Tooltips;
+
+        public MultiplayerRootContext()
+        {
+            RootUIElement = new Group(spacing: Utils.MenuSpacing.X);
+        }
+
+        public MultiplayerRootContext(Group root)
+        {
+            RootUIElement = root;
+        }
     }
 
-    public class ModEntry : Mod
+    internal class ModEntry : Mod
     {
         private static ModEntry? _instance;
         public static ModEntry Instance 
         { 
-            get => _instance ?? throw new ArgumentNullException(nameof(Instance));
+            get => _instance ?? throw new NullReferenceException(nameof(Instance));
             private set => _instance = value; 
         }
 
@@ -28,38 +36,96 @@ namespace Predictor
 
         internal MultiplayerManager<MultiplayerRootContext> MultiplayerManager = new();
         private List<IPatch> Patches = new();
-        private Group? RootUIElement
+        public Group RootUIElement
         {
             get => MultiplayerManager.GetValue().RootUIElement;
             set => MultiplayerManager.GetValue().RootUIElement = value;
         }
-        private Vector2 CursorPosition
+        public IUIDrawable? Tooltips
         {
-            get => MultiplayerManager.GetValue().CursorPosition;
-            set => MultiplayerManager.GetValue().CursorPosition = value;
+            get => MultiplayerManager.GetValue().Tooltips;
+            set => MultiplayerManager.GetValue().Tooltips = value;
         }
         private bool EventsRegistered = false;
+
+        public void UnsubscribeEventHandlers()
+        {
+            MultiplayerManager.ClearConnections();
+            if (EventsRegistered)
+            {
+                EventsRegistered = false;
+                Helper.Events.Display.RenderedHud -= OnRendered;
+                Helper.Events.GameLoop.OneSecondUpdateTicked -= OnUpdate;
+                Helper.Events.GameLoop.UpdateTicked -= OnUpdate;
+            }
+
+            foreach (var patch in Patches)
+            {
+                patch.Detatch();
+            }
+        }
+
+        public void SubscribeEventHandlers()
+        {
+            if (!EventsRegistered)
+            {
+                EventsRegistered = true;
+                Helper.Events.Display.RenderedHud += OnRendered;
+
+                if (Config.LazyUpdates)
+                {
+                    Helper.Events.GameLoop.OneSecondUpdateTicked += OnUpdate;
+                }
+                else
+                {
+                    Helper.Events.GameLoop.UpdateTicked += OnUpdate;
+                }
+            }
+
+            foreach (var patch in Patches)
+            {
+                patch.Attach();
+            }
+        }
+
+        public void RetatchPatches()
+        {
+            foreach (var patch in Patches)
+            {
+                patch.Detatch();
+                patch.Attach();
+            }
+        }
+
+        public bool RegisterPatch(IPatch patch)
+        {
+            if (Patches.Contains(patch))
+            {
+                return false;
+            }
+
+            Patches.Add(patch);
+            if (EventsRegistered)
+            {
+                patch.Attach();
+            }
+
+            return true;
+        }
+
+        public bool DeRegisterPatch(IPatch patch)
+        {
+            return this.Patches.Remove(patch);
+        }
 
         public override void Entry(IModHelper helper)
         {
             Instance = this;
             Config = helper.ReadConfig<ModConfig>();
-            MultiplayerManager.Init(helper);
+            MultiplayerManager.Init(helper, Monitor);
             Patches = new List<IPatch>()
             {
-                new ObjectPatch(helper, Monitor),
-                new FishingPatch(helper, Monitor),
-                new TillablePatch(helper, Monitor),
-                new MineablePatch(helper, Monitor),
-                new BreakableContainerPatch(helper, Monitor),
-                new GarbageCanPatch(helper, Monitor),
-                new GeodePatch(helper, Monitor),
-                new TreePatch(helper, Monitor),
-                new DigSpotPatch(helper, Monitor),
-                new SpawnedPatch(helper, Monitor),
-                new BushPatch(helper, Monitor),
-                new PanningPatch(helper, Monitor),
-                new MinigamesPatch(helper, Monitor),
+                new Patch(helper, Monitor)
             };
 
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
@@ -70,8 +136,14 @@ namespace Predictor
             Config.PropertyChanged += OnConfigPropertyChanged;
         }
 
+        public override object GetApi()
+        {
+            return new ModAPI();
+        }
+
         private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
         {
+            FrameworkUtils.Initialize(Helper);
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
             {
@@ -98,7 +170,7 @@ namespace Predictor
 
         private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
-            if (e.Button == Config.ToggleKey)
+            if (e.Button == Config.ToggleKey && Context.IsMainPlayer)
             {
                 Config.SetProperty(ref Config.Enabled, !Config.Enabled, nameof(Config.Enabled));
             }
@@ -117,45 +189,21 @@ namespace Predictor
                     UnsubscribeEventHandlers();
                 }
             }
-            else if (Config.Enabled)
+            else if (Config.Enabled && EventsRegistered)
             {
-                foreach (var patch in Patches)
-                {
-                    patch.Detatch();
-                    patch.Attach();
-                }
+                RetatchPatches();
             }
         }
 
         private void OnRendered(object? sender, RenderedHudEventArgs e)
         {
-            RootUIElement?.Draw(e.SpriteBatch);
-            RootUIElement?.GetChildAt(CursorPosition)?.DrawTooltips(e.SpriteBatch);
-        }
-
-        private void OnCursorMoved(object? sender, CursorMovedEventArgs e)
-        {
-            CursorPosition = e.NewPosition.ScreenPixels * Game1.options.zoomLevel / Game1.options.uiScale;
+            RootUIElement.Draw(e.SpriteBatch, Config.GetMenuOffset());
+            Tooltips?.Draw(e.SpriteBatch);
         }
 
         private void OnUpdate(object? sender, EventArgs e)
         {
-            var children = Patches.Select(x => x.GetMenu());
-            var offset = Config.GetMenuOffset();
-            var root = new Group(
-                children: children,
-                spacing: 4f
-            );
-
-            if (!root.IsEmpty)
-            {
-                RootUIElement = root;
-                RootUIElement.Update(offset);
-            }
-            else
-            {
-                RootUIElement = null;
-            }
+            RootUIElement.Children = Patches.Select(x => x.GetMenu());
         }
 
         protected override void Dispose(bool disposing)
@@ -169,72 +217,18 @@ namespace Predictor
             }
         }
 
-        private void UnsubscribeEventHandlers()
-        {
-            MultiplayerManager.ClearConnections();
-            if (EventsRegistered)
-            {
-                EventsRegistered = false;
-                Helper.Events.Display.RenderedHud -= OnRendered;
-                Helper.Events.Input.CursorMoved -= OnCursorMoved;
-                Helper.Events.GameLoop.OneSecondUpdateTicked -= OnUpdate;
-                Helper.Events.GameLoop.UpdateTicked -= OnUpdate;
-            }
-
-            foreach (var patch in Patches)
-            {
-                patch.Detatch();
-            }
-        }
-
-        private void SubscribeEventHandlers()
-        {
-            if (!EventsRegistered)
-            {
-                EventsRegistered = true;
-                Helper.Events.Display.RenderedHud += OnRendered;
-                Helper.Events.Input.CursorMoved += OnCursorMoved;
-
-                if (Config.LazyUpdates)
-                {
-                    Helper.Events.GameLoop.OneSecondUpdateTicked += OnUpdate;
-                }
-                else
-                {
-                    Helper.Events.GameLoop.UpdateTicked += OnUpdate;
-                }
-            }
-            
-            foreach (var patch in Patches)
-            {
-                patch.Attach();
-            }
-        }
-
         private void RegisterModConfig(IGenericModConfigMenuApi menu)
         {
-            #region Setup
             menu.Register(
                 mod: ModManifest,
                 reset: () => Config = new ModConfig(),
                 save: () => Helper.WriteConfig(Config)
             );
-            // menu.OnFieldChanged(this.ModManifest, OnModconfigFieldChanges);
-            menu.AddSectionTitle(mod: ModManifest, text: () => Helper.Translation.Get("config.default.header"));
-            menu.AddPageLink(ModManifest, "general", () => Helper.Translation.Get("config.general.title"));
-            menu.AddPageLink(ModManifest, "items", () => Helper.Translation.Get("config.items.title"));
-            menu.AddPageLink(ModManifest, "outlines", () => Helper.Translation.Get("config.outlines.title"));
-            menu.AddPageLink(ModManifest, "trackers", () => Helper.Translation.Get("config.trackers.title"));
-            menu.AddPageLink(ModManifest, "fishing", () => Helper.Translation.Get("config.fishing.title"));
-            menu.AddPageLink(ModManifest, "minigames", () => Helper.Translation.Get("config.minigames.title"));
-            menu.AddPageLink(ModManifest, "menu", () => Helper.Translation.Get("config.menu.title"));
-            #endregion
 
             #region General
-            menu.AddPage(
+            menu.AddSectionTitle(
                 mod: ModManifest,
-                pageId: "general",
-                pageTitle: () => Helper.Translation.Get("config.general.title")
+                text: () => Helper.Translation.Get("config.general.title")
             );
             menu.AddBoolOption(
                 mod: ModManifest,
@@ -260,177 +254,6 @@ namespace Predictor
                 getValue: () => Config.ToggleKey,
                 setValue: value => Config.SetProperty(ref Config.ToggleKey, value, nameof(Config.ToggleKey))
             );
-            #endregion
-
-            #region Items
-            menu.AddPage(
-                mod: ModManifest,
-                pageId: "items",
-                pageTitle: () => Helper.Translation.Get("config.items.title")
-            );
-            menu.AddSectionTitle(
-                mod: ModManifest,
-                text: () => Helper.Translation.Get("config.items.text")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableHarvestableBushItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableHarvestableBushItems)}.desc"),
-                getValue: () => Config.EnableHarvestableBushItems,
-                setValue: value => Config.SetProperty(ref Config.EnableHarvestableBushItems, value, nameof(Config.EnableHarvestableBushItems))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableBreakableContainerItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableBreakableContainerItems)}.desc"),
-                getValue: () => Config.EnableBreakableContainerItems,
-                setValue: value => Config.SetProperty(ref Config.EnableBreakableContainerItems, value, nameof(Config.EnableBreakableContainerItems))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableDigSpotItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableDigSpotItems)}.desc"),
-                getValue: () => Config.EnableDigSpotItems,
-                setValue: value => Config.SetProperty(ref Config.EnableDigSpotItems, value, nameof(Config.EnableDigSpotItems))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableGeodeItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableGeodeItems)}.desc"),
-                getValue: () => Config.EnableGeodeItems,
-                setValue: value => Config.SetProperty(ref Config.EnableGeodeItems, value, nameof(Config.EnableGeodeItems))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableGarbageCanItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableGarbageCanItems)}.desc"),
-                getValue: () => Config.EnableGarbageCanItems,
-                setValue: value => Config.SetProperty(ref Config.EnableGarbageCanItems, value, nameof(Config.EnableGarbageCanItems))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnablePaningSpotItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnablePaningSpotItems)}.desc"),
-                getValue: () => Config.EnablePaningSpotItems,
-                setValue: value => Config.SetProperty(ref Config.EnablePaningSpotItems, value, nameof(Config.EnablePaningSpotItems))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableMineableObjectItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableMineableObjectItems)}.desc"),
-                getValue: () => Config.EnableMineableObjectItems,
-                setValue: value => Config.SetProperty(ref Config.EnableMineableObjectItems, value, nameof(Config.EnableMineableObjectItems))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableHarvestableTreeItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableHarvestableTreeItems)}.desc"),
-                getValue: () => Config.EnableHarvestableTreeItems,
-                setValue: value => Config.SetProperty(ref Config.EnableHarvestableTreeItems, value, nameof(Config.EnableHarvestableTreeItems))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableTillableItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableTillableItems)}.desc"),
-                getValue: () => Config.EnableTillableItems,
-                setValue: value => Config.SetProperty(ref Config.EnableTillableItems, value, nameof(Config.EnableTillableItems))
-            );
-            #endregion
-
-            #region Outlines
-            menu.AddPage(
-                mod: ModManifest,
-                pageId: "outlines",
-                pageTitle: () => Helper.Translation.Get("config.outlines.title")
-            );
-            menu.AddSectionTitle(
-                mod: ModManifest,
-                text: () => Helper.Translation.Get("config.outlines.text")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableDigSpotOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableDigSpotOutlines)}.desc"),
-                getValue: () => Config.EnableDigSpotOutlines,
-                setValue: value => Config.SetProperty(ref Config.EnableDigSpotOutlines, value, nameof(Config.EnableDigSpotOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableHarvestableBushOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableHarvestableBushOutlines)}.desc"),
-                getValue: () => Config.EnableHarvestableBushOutlines,
-                setValue: value => Config.SetProperty(ref Config.EnableHarvestableBushOutlines, value, nameof(Config.EnableHarvestableBushOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableBreakableContainerOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableBreakableContainerOutlines)}.desc"),
-                getValue: () => Config.EnableBreakableContainerOutlines,
-                setValue: value => Config.SetProperty(ref Config.EnableBreakableContainerOutlines, value, nameof(Config.EnableBreakableContainerOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableSpawnedOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableSpawnedOutlines)}.desc"),
-                getValue: () => Config.EnableSpawnedOutlines,
-                setValue: value => Config.SetProperty(ref Config.EnableSpawnedOutlines, value, nameof(Config.EnableSpawnedOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableGarbageCanOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableGarbageCanOutlines)}.desc"),
-                getValue: () => Config.EnableGarbageCanOutlines,
-                setValue: value => Config.SetProperty(ref Config.EnableGarbageCanOutlines, value, nameof(Config.EnableGarbageCanOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableGarbageCanWarningOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableGarbageCanWarningOutlines)}.desc"),
-                getValue: () => Config.EnableGarbageCanWarningOutlines,
-                setValue: value => Config.SetProperty(ref Config.EnableGarbageCanWarningOutlines, value, nameof(Config.EnableGarbageCanWarningOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnablePaningSpotOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnablePaningSpotOutlines)}.desc"),
-                getValue: () => Config.EnablePaningSpotOutlines,
-                setValue: value => Config.SetProperty(ref Config.EnablePaningSpotOutlines, value, nameof(Config.EnablePaningSpotOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableMineableObjectOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableMineableObjectOutlines)}.desc"),
-                getValue: () => Config.EnableMineableObjectOutlines,
-                setValue: value => Config.SetProperty(ref Config.EnableMineableObjectOutlines, value, nameof(Config.EnableMineableObjectOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableHarvestableTreeOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableHarvestableTreeOutlines)}.desc"),
-                getValue: () => Config.EnableHarvestableTreeOutlines,
-                setValue: value => Config.SetProperty(ref Config.EnableHarvestableTreeOutlines, value, nameof(Config.EnableHarvestableTreeOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableTillableOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableTillableOutlines)}.desc"),
-                getValue: () => Config.EnableTillableOutlines,
-                setValue: value => Config.SetProperty(ref Config.EnableTillableOutlines, value, nameof(Config.EnableTillableOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableLadderOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableLadderOutlines)}.desc"),
-                getValue: () => Config.EnableLadderOutlines,
-                setValue: value => Config.SetProperty(ref Config.EnableLadderOutlines, value, nameof(Config.EnableLadderOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableMonstersHideLadders)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableMonstersHideLadders)}.desc"),
-                getValue: () => Config.EnableMonstersHideLadders,
-                setValue: value => Config.SetProperty(ref Config.EnableMonstersHideLadders, value, nameof(Config.EnableMonstersHideLadders))
-            );
             menu.AddBoolOption(
                 mod: ModManifest,
                 name: () => Helper.Translation.Get($"options.{nameof(Config.EnableObjectOutlines)}"),
@@ -440,180 +263,10 @@ namespace Predictor
             );
             #endregion
 
-            #region Trackers
-            menu.AddPage(
-                mod: ModManifest,
-                pageId: "trackers",
-                pageTitle: () => Helper.Translation.Get("config.trackers.title")
-            );
+            #region Menus
             menu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => Helper.Translation.Get("config.trackers.text")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.TrackHarvestableBushes)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackHarvestableBushes)}.desc"),
-                getValue: () => Config.TrackHarvestableBushes,
-                setValue: value => Config.SetProperty(ref Config.TrackHarvestableBushes, value, nameof(Config.TrackHarvestableBushes))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.TrackBreakableContainers)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackBreakableContainers)}.desc"),
-                getValue: () => Config.TrackBreakableContainers,
-                setValue: value => Config.SetProperty(ref Config.TrackBreakableContainers, value, nameof(Config.TrackBreakableContainers))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.TrackDigSpots)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackDigSpots)}.desc"),
-                getValue: () => Config.TrackDigSpots,
-                setValue: value => Config.SetProperty(ref Config.TrackDigSpots, value, nameof(Config.TrackDigSpots))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.TrackSpawned)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackSpawned)}.desc"),
-                getValue: () => Config.TrackSpawned,
-                setValue: value => Config.SetProperty(ref Config.TrackSpawned, value, nameof(Config.TrackSpawned))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.TrackPanningSpots)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackPanningSpots)}.desc"),
-                getValue: () => Config.TrackPanningSpots,
-                setValue: value => Config.SetProperty(ref Config.TrackPanningSpots, value, nameof(Config.TrackPanningSpots))
-            );
-            menu.AddSectionTitle(ModManifest, () => Helper.Translation.Get("config.trackers.subsection1"));
-            menu.AddNumberOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.TrackerMenuMaxItemCount)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackerMenuMaxItemCount)}.desc"),
-                getValue: () => Config.TrackerMenuMaxItemCount,
-                setValue: value => Config.SetProperty(ref Config.TrackerMenuMaxItemCount, value, nameof(Config.TrackerMenuMaxItemCount))
-            );
-            menu.AddNumberOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.TrackerMenuMaxItemDistance)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackerMenuMaxItemDistance)}.desc"),
-                getValue: () => Config.TrackerMenuMaxItemDistance,
-                setValue: value => Config.SetProperty(ref Config.TrackerMenuMaxItemDistance, value, nameof(Config.TrackerMenuMaxItemDistance))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.TrackerMenuShowLess)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackerMenuShowLess)}.desc"),
-                getValue: () => Config.TrackerMenuShowLess,
-                setValue: value => Config.SetProperty(ref Config.TrackerMenuShowLess, value, nameof(Config.TrackerMenuShowLess))
-            );
-            #endregion
-
-            #region Fishing
-            menu.AddPage(
-                mod: ModManifest,
-                pageId: "fishing",
-                pageTitle: () => Helper.Translation.Get("config.fishing.title")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowFishInMinigame)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowFishInMinigame)}.desc"),
-                getValue: () => Config.ShowFishInMinigame,
-                setValue: value => Config.SetProperty(ref Config.ShowFishInMinigame, value, nameof(Config.ShowFishInMinigame))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowBait)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowBait)}.desc"),
-                getValue: () => Config.ShowBait,
-                setValue: value => Config.SetProperty(ref Config.ShowBait, value, nameof(Config.ShowBait))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowTackle)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowTackle)}.desc"),
-                getValue: () => Config.ShowTackle,
-                setValue: value => Config.SetProperty(ref Config.ShowTackle, value, nameof(Config.ShowTackle))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowFishChances)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowFishChances)}.desc"),
-                getValue: () => Config.ShowFishChances,
-                setValue: value => Config.SetProperty(ref Config.ShowFishChances, value, nameof(Config.ShowFishChances))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EstimateFishChances)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EstimateFishChances)}.desc"),
-                getValue: () => Config.EstimateFishChances,
-                setValue: value => Config.SetProperty(ref Config.EstimateFishChances, value, nameof(Config.EstimateFishChances))
-            );
-            menu.AddNumberOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.NumFishCatches)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.NumFishCatches)}.desc"),
-                getValue: () => Config.NumFishCatches,
-                setValue: value => Config.SetProperty(ref Config.NumFishCatches, value, nameof(Config.NumFishCatches))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowTrashChances)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowTrashChances)}.desc"),
-                getValue: () => Config.ShowTrashChances,
-                setValue: value => Config.SetProperty(ref Config.ShowTrashChances, value, nameof(Config.ShowTrashChances))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowSecretNoteChances)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowSecretNoteChances)}.desc"),
-                getValue: () => Config.ShowSecretNoteChances,
-                setValue: value => Config.SetProperty(ref Config.ShowSecretNoteChances, value, nameof(Config.ShowSecretNoteChances))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowUncaughtFish)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowUncaughtFish)}.desc"),
-                getValue: () => Config.ShowUncaughtFish,
-                setValue: value => Config.SetProperty(ref Config.ShowUncaughtFish, value, nameof(Config.ShowUncaughtFish))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowLessFishInfo)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowLessFishInfo)}.desc"),
-                getValue: () => Config.ShowLessFishInfo,
-                setValue: value => Config.SetProperty(ref Config.ShowLessFishInfo, value, nameof(Config.ShowLessFishInfo))
-            );
-            #endregion
-
-            #region Minigames
-
-            #endregion
-            menu.AddPage(
-                mod: ModManifest,
-                pageId: "minigames",
-                pageTitle: () => Helper.Translation.Get("config.minigames.title")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowCalicoJackOutcome)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowCalicoJackOutcome)}.desc"),
-                getValue: () => Config.ShowCalicoJackOutcome,
-                setValue: value => Config.SetProperty(ref Config.ShowCalicoJackOutcome, value, nameof(Config.ShowCalicoJackOutcome))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowSlotsOutcome)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowSlotsOutcome)}.desc"),
-                getValue: () => Config.ShowSlotsOutcome,
-                setValue: value => Config.SetProperty(ref Config.ShowSlotsOutcome, value, nameof(Config.ShowSlotsOutcome))
-            );
-            #region Menu
-            menu.AddPage(
-                mod: ModManifest,
-                pageId: "menu",
-                pageTitle: () => Helper.Translation.Get("config.fishing.title")
+                text: () => Helper.Translation.Get("config.menus.title")
             );
             menu.AddNumberOption(
                 mod: ModManifest,

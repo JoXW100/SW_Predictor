@@ -1,0 +1,16 @@
+{
+  "Name": "Predictor Bush Patch",
+  "Author": "JoXW",
+  "Version": "1.0.0",
+  "Description": "Predicts bush item drops.",
+  "UniqueID": "JoXW.PredictorBushPatch",
+  "EntryDll": "PredictorBushPatch.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:21332@BushPatch" ],
+  "Dependencies": [
+    {
+      "UniqueID": "JoXW.Predictor",
+      "IsRequired": true
+    }
+  ]
+}
