@@ -69,12 +69,8 @@ namespace PredictorDigSpotPatch
 
                 // Dig spots
                 PredictionContext ctx = new();
-                if (ModEntry.Instance.Config.ShowItems)
-                {
-                    Game1.player.currentLocation.Predict_digUpSpot(ctx, obj, pos, Game1.player);
-                }
-
-                if (ctx.Items.Any() || ModEntry.Instance.Config.ShowItems)
+                Game1.player.currentLocation.Predict_digUpSpot(ctx, obj, pos, Game1.player);
+                if (ctx.Items.Any())
                 {
                     if (Context.TryGetValue(pos, out var current))
                     {

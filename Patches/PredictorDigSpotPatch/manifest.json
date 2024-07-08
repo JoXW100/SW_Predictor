@@ -1,7 +1,7 @@
 {
   "Name": "Predictor Dig Spot Patch",
   "Author": "JoXW",
-  "Version": "1.0.0",
+  "Version": "1.0.1",
   "Description": "Predicts item drops of dig spots.",
   "UniqueID": "JoXW.PredictorDigSpotPatch",
   "EntryDll": "PredictorDigSpotPatch.dll",

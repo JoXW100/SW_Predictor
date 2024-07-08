@@ -6,5 +6,5 @@
   "options.ShowItems": "Show Items",
   "options.ShowItems.desc": "Draws item icons of predicted drops for tillable tiles.",
   "options.ShowOutlines": "Show Outlines",
-  "options.ShowOutlines.desc": "Draws outlines around shakeable bushes."
+  "options.ShowOutlines.desc": "Draws outlines around tillable tiles."
 }

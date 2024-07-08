@@ -1,7 +1,7 @@
 {
   "Name": "Predictor Tillable Patch",
   "Author": "JoXW",
-  "Version": "1.0.0",
+  "Version": "1.0.1",
   "Description": "Predicts item drops from tillable tiles.",
   "UniqueID": "JoXW.PredictorTillablePatch",
   "EntryDll": "PredictorTillablePatch.dll",

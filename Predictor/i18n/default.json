@@ -10,8 +10,8 @@
   "options.LazyUpdates.desc": "Update less frequently to improve performance.",
   "options.ToggleKey": "Toggle keybind",
   "options.ToggleKey.desc": "The button used to toggle if the mod functionality is enabled.",
-  "options.EnableObjectOutlines": "Objects",
-  "options.EnableObjectOutlines.desc": "Shows outlines for all objects, this includes many of the above options.",
+  "options.EnableObjectOutlines": "Enable Object Outlines",
+  "options.EnableObjectOutlines.desc": "Shows outlines for all objects.",
 
   "options.MenuOffsetX": "Menu offset X",
   "options.MenuOffsetX.desc": "Horisontal menu position offset.",

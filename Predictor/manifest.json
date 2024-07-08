@@ -1,7 +1,7 @@
 {
   "Name": "Predictor",
   "Author": "JoXW",
-  "Version": "1.0.0",
+  "Version": "1.0.1",
   "Description": "Predicts various RNG outcomes.",
   "UniqueID": "JoXW.Predictor",
   "EntryDll": "Predictor.dll",
