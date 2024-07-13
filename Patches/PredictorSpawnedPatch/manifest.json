@@ -1,7 +1,7 @@
 {
   "Name": "Predictor Spawned Patch",
   "Author": "JoXW",
-  "Version": "1.0.0",
+  "Version": "1.0.1",
   "Description": "Tracks spawned items.",
   "UniqueID": "JoXW.PredictorSpawnedPatch",
   "EntryDll": "PredictorSpawnedPatch.dll",

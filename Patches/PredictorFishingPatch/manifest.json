@@ -1,7 +1,7 @@
 {
   "Name": "Predictor Fishing Patch",
   "Author": "JoXW",
-  "Version": "1.0.0",
+  "Version": "1.0.1",
   "Description": "Predicts chances of catching fish and other relevant information.",
   "UniqueID": "JoXW.PredictorFishingPatch",
   "EntryDll": "PredictorFishingPatch.dll",

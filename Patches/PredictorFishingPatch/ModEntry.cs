@@ -23,7 +23,7 @@ namespace PredictorFishingPatch
             Config = helper.ReadConfig<ModConfig>();
             Patch = new Patch(Helper, Monitor);
             Config.PropertyChanged += OnConfigPropertyChanged;
-            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
 
         }
 
@@ -51,10 +51,10 @@ namespace PredictorFishingPatch
             }
         }
 
-        private void GameLoop_GameLaunched(object? sender, GameLaunchedEventArgs e)
+        private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
         {
             FrameworkUtils.Initialize(Helper);
-            if (Patch is not null)
+            if (Patch is not null && Config.Enabled)
             {
                 FrameworkUtils.API.RegisterPatch(Patch);
             }

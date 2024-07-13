@@ -86,16 +86,18 @@ namespace PredictorTillablePatch
             }
 
             Context.Clear();
-            if (Game1.player.CurrentItem is Hoe)
+            if (ModEntry.Instance.Config.RequireTool && Game1.player.CurrentTool is not Hoe)
             {
-                foreach (var pos in GetDiggableTileLocations(Game1.currentLocation))
+                return;
+            }
+
+            foreach (var pos in GetDiggableTileLocations(Game1.currentLocation))
+            {
+                PredictionContext ctx = new();
+                Game1.currentLocation.Predict_checkForBuriedItem(ctx, pos.X, pos.Y, false, false, Game1.player);
+                if (ctx.Items.Any())
                 {
-                    PredictionContext ctx = new();
-                    Game1.currentLocation.Predict_checkForBuriedItem(ctx, pos.X, pos.Y, false, false, Game1.player);
-                    if (ctx.Items.Any())
-                    {
-                        Context.TryAdd(pos.ToVector2(), ctx);
-                    }
+                    Context.TryAdd(pos.ToVector2(), ctx);
                 }
             }
         }

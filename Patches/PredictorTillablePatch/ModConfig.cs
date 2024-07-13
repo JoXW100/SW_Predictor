@@ -19,6 +19,7 @@
         public bool Enabled = true;
         public bool ShowItems = true;
         public bool ShowOutlines = true;
+        public bool RequireTool = true;
 
         public void SetProperty<T>(ref T property, T value, string name) where T : notnull
         {

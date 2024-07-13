@@ -6,6 +6,8 @@
 
   "options.Enabled": "Enabled",
   "options.Enabled.desc": "Enables/Disables this patch.",
+  "options.RequireTool": "Require Hoe",
+  "options.RequireTool.desc": "Require the hoe to be equiped.",
   "options.ShowItems": "Show Items",
   "options.ShowItems.desc": "Draws item icons of predicted drops for dig spots when a hoe is equiped.",
   "options.ShowOutlines": "Show Outlines",

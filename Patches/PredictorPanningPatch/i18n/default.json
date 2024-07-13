@@ -6,6 +6,8 @@
 
   "options.Enabled": "Enabled",
   "options.Enabled.desc": "Enables/Disables this patch.",
+  "options.RequireTool": "Require Pan",
+  "options.RequireTool.desc": "Require the pan to be equiped.",
   "options.ShowItems": "Show Items",
   "options.ShowItems.desc": "Draws item icons of predicted drops for panning spots.",
   "options.ShowOutlines": "Show Outlines",

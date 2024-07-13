@@ -93,7 +93,10 @@ namespace Predictor
             foreach (var patch in Patches)
             {
                 patch.Detatch();
-                patch.Attach();
+                if (Config.Enabled)
+                {
+                    patch.Attach();
+                }
             }
         }
 
@@ -105,7 +108,7 @@ namespace Predictor
             }
 
             Patches.Add(patch);
-            if (EventsRegistered)
+            if (Config.Enabled && EventsRegistered)
             {
                 patch.Attach();
             }

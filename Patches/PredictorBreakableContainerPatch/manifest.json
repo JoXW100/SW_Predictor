@@ -1,7 +1,7 @@
 {
   "Name": "Predictor Breakable Container Patch",
   "Author": "JoXW",
-  "Version": "1.0.0",
+  "Version": "1.0.1",
   "Description": "Predicts items inside breakable containers.",
   "UniqueID": "JoXW.PredictorBreakableContainerPatch",
   "EntryDll": "PredictorBreakableContainerPatch.dll",

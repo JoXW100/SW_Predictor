@@ -3,6 +3,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using PredictorPatchFramework;
 using PredictorPatchFramework.Extentions;
+using StardewValley.Tools;
 
 namespace PredictorDigSpotPatch
 {
@@ -59,6 +60,11 @@ namespace PredictorDigSpotPatch
             }
 
             Context.Clear();
+            if (ModEntry.Instance.Config.RequireTool && Game1.player.CurrentItem is not Hoe)
+            {
+                return;
+            }
+
             foreach (var (pos, obj) in Game1.player.currentLocation.Objects.Pairs)
             {
                 if ((obj.QualifiedItemId != "(O)590" && obj.QualifiedItemId != "(O)SeedSpot") 

@@ -23,7 +23,7 @@ namespace PredictorTillablePatch
             Config = helper.ReadConfig<ModConfig>();
             Patch = new Patch(Helper, Monitor);
             Config.PropertyChanged += OnConfigPropertyChanged;
-            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            Helper.Events.GameLoop.GameLaunched += OnGameLaunched;
 
         }
 
@@ -51,10 +51,10 @@ namespace PredictorTillablePatch
             }
         }
 
-        private void GameLoop_GameLaunched(object? sender, GameLaunchedEventArgs e)
+        private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
         {
             FrameworkUtils.Initialize(Helper);
-            if (Patch is not null)
+            if (Patch is not null && Config.Enabled)
             {
                 FrameworkUtils.API.RegisterPatch(Patch);
             }
@@ -80,6 +80,13 @@ namespace PredictorTillablePatch
                 tooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
                 getValue: () => Config.Enabled,
                 setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
+            );
+            menu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.RequireTool)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.RequireTool)}.desc"),
+                getValue: () => Config.RequireTool,
+                setValue: value => Config.SetProperty(ref Config.RequireTool, value, nameof(Config.RequireTool))
             );
             menu.AddSectionTitle(
                 mod: ModManifest,

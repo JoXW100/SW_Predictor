@@ -17,6 +17,7 @@
         public event EventHandler<ProperyChangedEventArgs>? PropertyChanged;
 
         public bool Enabled = true;
+        public bool RequireTool = false;
         public bool ShowItems = true;
         public bool ShowOutlines = true;
         public bool ShowLadders = true;

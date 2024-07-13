@@ -7,6 +7,7 @@ using StardewValley.Monsters;
 using PredictorPatchFramework;
 using PredictorPatchFramework.Extentions;
 using DynamicUIFramework;
+using StardewValley.Tools;
 
 namespace PredictorMineablePatch
 {
@@ -81,13 +82,14 @@ namespace PredictorMineablePatch
             foreach (var (posx, ctx) in Context)
             {
                 var pos = Game1.GlobalToLocal(Game1.viewport, posx * FrameworkUtils.TileSize) * ratio;
-                var drawLadder = ModEntry.Instance.Config.ShowLadders
-                    && (!ModEntry.Instance.Config.MonstersHideLadders || !Game1.currentLocation.characters.Any(c => c is Monster));
-
-                if (drawLadder && ctx.Properties.TryGetValue("spawnLadder", out var shaft))
+                var drawOutline = true;
+                if (ModEntry.Instance.Config.ShowLadders
+                && (!ModEntry.Instance.Config.MonstersHideLadders || !Game1.currentLocation.characters.Any(c => c is Monster))
+                && ctx.Properties.TryGetValue("spawnLadder", out var shaft))
                 {
+                    drawOutline = false;
                     var area = new Rectangle((int)pos.X, (int)pos.Y, (int)size, (int)size);
-                    var color = (bool)shaft ? ShaftColor : LadderColor;
+                    var color = (bool)shaft! ? ShaftColor : LadderColor;
                     spriteBatch.Draw(m_mineTexture, area, (bool)shaft ? m_shaftSourceRect : m_ladderSourceRect, new Color(1f, 1f, 1f, 0.5f));
                     spriteBatch.DrawBorder(area, 4, color);
                 }
@@ -103,7 +105,7 @@ namespace PredictorMineablePatch
                     }
                 }
 
-                if (ModEntry.Instance.Config.ShowOutlines && !drawLadder)
+                if (ModEntry.Instance.Config.ShowOutlines && drawOutline)
                 {
                     var area = new Rectangle((int)pos.X, (int)pos.Y, (int)size, (int)size);
                     spriteBatch.DrawBorder(area, 1, FrameworkUtils.API.OutlineColor);
@@ -119,6 +121,11 @@ namespace PredictorMineablePatch
             }
 
             Context.Clear();
+            if (ModEntry.Instance.Config.RequireTool && Game1.player.CurrentTool is not Pickaxe)
+            {
+                return;
+            }
+
             foreach (var (pos, obj) in Game1.player.currentLocation.Objects.Pairs)
             {
                 // skip non-stone objects too far away.
@@ -129,22 +136,15 @@ namespace PredictorMineablePatch
                 }
 
                 PredictionContext ctx = new();
-                if (ModEntry.Instance.Config.ShowItems || ModEntry.Instance.Config.ShowOutlines)
-                {
-                    Game1.currentLocation.Predict_OnStoneDestroyed(ctx, obj.ItemId, location.X, location.Y, Game1.player);
-                }
+                Game1.currentLocation.Predict_OnStoneDestroyed(ctx, obj.ItemId, location.X, location.Y, Game1.player);
 
-                if ((ModEntry.Instance.Config.ShowItems && ctx.Items.Any())
-                 || ModEntry.Instance.Config.ShowOutlines
-                 || (ModEntry.Instance.Config.ShowLadders && ctx.Properties.ContainsKey("spawnLadder")))
+                if (Context.TryGetValue(pos, out var current))
                 {
-                    if (Context.TryGetValue(pos, out var current))
-                    {
-                        current.Join(ctx);
-                    } else
-                    {
-                        Context.Add(pos, ctx);
-                    }
+                    current.Join(ctx);
+                }
+                else
+                {
+                    Context.Add(pos, ctx);
                 }
             }
         }

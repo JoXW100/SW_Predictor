@@ -1,7 +1,7 @@
 {
   "Name": "Predictor Geode Patch",
   "Author": "JoXW",
-  "Version": "1.0.0",
+  "Version": "1.0.1",
   "Description": "Predicts geode cracking item drops.",
   "UniqueID": "JoXW.PredictorGeodePatch",
   "EntryDll": "PredictorGeodePatch.dll",

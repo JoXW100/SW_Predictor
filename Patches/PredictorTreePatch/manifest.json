@@ -1,7 +1,7 @@
 {
   "Name": "Predictor Tree Patch",
   "Author": "JoXW",
-  "Version": "1.0.0",
+  "Version": "1.0.1",
   "Description": "Predicts tree drops.",
   "UniqueID": "JoXW.PredictorTreePatch",
   "EntryDll": "PredictorTreePatch.dll",

@@ -60,6 +60,11 @@ namespace PredictorPanningPatch
             }
 
             Context.Clear();
+            if (ModEntry.Instance.Config.RequireTool && Game1.player.CurrentTool is not Pan)
+            {
+                return;
+            }
+
             if (Game1.player.CurrentItem is Pan pan)
             {
                 var pos = Game1.currentLocation.orePanPoint.Value;

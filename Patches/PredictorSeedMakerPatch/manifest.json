@@ -1,7 +1,7 @@
 {
   "Name": "Predictor Seed Maker Patch",
   "Author": "JoXW",
-  "Version": "1.0.0",
+  "Version": "1.0.1",
   "Description": "Predicts item drops from the Seed Maker.",
   "UniqueID": "JoXW.PredictorSeedMakerPatch",
   "EntryDll": "PredictorSeedMakerPatch.dll",
