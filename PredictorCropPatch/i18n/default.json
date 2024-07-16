@@ -1,0 +1,12 @@
+{
+  "config.general.title": "General",
+  "config.features.title": "Features",
+  "options.Enabled": "Enabled",
+  "options.Enabled.desc": "Enables/Disables this patch.",
+  "options.RequireTool": "Require Scythe",
+  "options.RequireTool.desc": "Require the scythe to be equiped.",
+  "options.ShowItems": "Show Items",
+  "options.ShowItems.desc": "Draws item icons of predicted drops for harvestable crops.",
+  "options.ShowOutlines": "Show Outlines",
+  "options.ShowOutlines.desc": "Draws outlines around harvestable crops is equiped."
+}

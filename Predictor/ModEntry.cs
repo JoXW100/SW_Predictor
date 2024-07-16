@@ -285,16 +285,14 @@ namespace Predictor
                 getValue: () => Config.MenuOffsetY,
                 setValue: value => Config.SetProperty(ref Config.MenuOffsetY, value, nameof(Config.MenuOffsetY))
             );
-            var menyTypeOptions = ModConfig.MenyTypeOptions.Select(i =>
-                Helper.Translation.Get($"options.{nameof(Config.MenuType)}.items.{i}").ToString()
-            ).ToList();
             menu.AddTextOption(
                 mod: ModManifest,
                 name: () => Helper.Translation.Get($"options.{nameof(Config.MenuType)}"),
                 tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuType)}.desc"),
-                getValue: () => menyTypeOptions[Config.MenuType],
-                setValue: value => Config.MenuType = menyTypeOptions.IndexOf(value),
-                allowedValues: menyTypeOptions.ToArray()
+                getValue: () => Config.MenuType.ToString(),
+                setValue: value => Config.SetProperty(ref Config.MenuType, int.Parse(value), nameof(Config.MenuType)),
+                formatAllowedValue: value => Helper.Translation.Get($"options.{nameof(Config.MenuType)}.items.{value}"),
+                allowedValues: ModConfig.MenyTypeOptions.Select(value => value.ToString()).ToArray()
             );
             menu.AddNumberOption(
                 mod: ModManifest,

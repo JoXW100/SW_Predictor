@@ -6,10 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <Private>false</Private>
-      <HintPath>E:\Program Files (x86)\Steam\steamapps\common\Stardew Valley\smapi-internal\0Harmony.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\DynamicUIFramework\DynamicUIFramework.csproj" Private="false"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="MonoGame.Framework">
       <Private>false</Private>
       <HintPath>E:\Program Files (x86)\Steam\steamapps\common\Stardew Valley\MonoGame.Framework.dll</HintPath>

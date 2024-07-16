@@ -1,0 +1,19 @@
+{
+  "config.general.title": "General",
+  "config.features.title": "Features",
+
+  "menu.SpawedHeader": "Spawned",
+
+  "options.Enabled": "Enabled",
+  "options.Enabled.desc": "Enables/Disables this patch.",
+  "options.ShowItems": "Show Items",
+  "options.ShowItems.desc": "Draws item icons of predicted drops for spawned objects.",
+  "options.ShowOutlines": "Show Outlines",
+  "options.ShowOutlines.desc": "Draws outlines around spawned items.",
+  "options.ShowTrackers": "Show Trackers",
+  "options.ShowTrackers.desc": "Display a menu that tracks nearby spawned items.",
+  "options.TrackerShowLess": "Simple Trackers",
+  "options.TrackerShowLess.desc": "Trackers show less information.",
+  "options.TrackerMaxItemCount": "Max Tracker Count",
+  "options.TrackerMaxItemCount.desc": "Maximum number of trackers shown, 0 for no limit."
+}

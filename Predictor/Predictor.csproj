@@ -1,16 +1,102 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableHarmony>true</EnableHarmony>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
   </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\DynamicUIFramework\DynamicUIFramework.csproj" />
-    <ProjectReference Include="..\PredictorFramework\PredictorPatchFramework.csproj" />
+    <ProjectReference Include="..\PredictorPatchFramework\PredictorPatchFramework.csproj" />
   </ItemGroup>
+  
+  <UsingTask TaskName="GetVersionTask" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <ProjectPath ParameterType="System.String" Required="true" />
+      <Version Output="true" ParameterType="System.String" />
+      <FullOutputPath Output="true" ParameterType="System.String" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.IO" />
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        try
+        {
+          string projectName = Path.GetFileNameWithoutExtension(ProjectPath);
+          string directory = Path.GetDirectoryName(Path.GetFullPath(ProjectPath));
+          if (!Directory.Exists(directory))
+          {
+              Log.LogError("Invalid Directory.", directory);
+              return false;
+          }
+          string manifestPath = Path.Combine(directory, "manifest.json");
+          string manifestContent = File.ReadAllText(manifestPath);
+          string match = "\"Version\":";
+          int startIndex = manifestContent.IndexOf(match) + match.Length;
+          if (startIndex == -1)
+          {
+              Log.LogError("Version field not found in manifest.");
+              return false;
+          }
+          int endIndex = manifestContent.IndexOf(',', startIndex);
+          Version = manifestContent.Substring(startIndex, endIndex - startIndex).Replace("\"", "").Trim();
+          FullOutputPath = Path.Combine(directory, "bin", "Release", "net6.0", projectName + " " + Version + ".zip");
+          Log.LogMessage(MessageImportance.High, "Path: " + FullOutputPath);
+          return true;
+        }
+        catch (Exception ex)
+        {
+          Log.LogErrorFromException(ex);
+          return false;
+        }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="CopyNonDependencyProjectsOutput" Condition="'$(Configuration)' == 'Release'" AfterTargets="Build">
+    <Message Importance="High" Text="Build Started" />
+    <!-- Define the output directory -->
+    <PropertyGroup>
+      <OutputDir>$(OutputPath)result\</OutputDir>
+    </PropertyGroup>
+
+    <!-- Get all project files except excluded ones -->
+    <ItemGroup>
+      <ExcludedProjects Include="..\Tasks\Tasks.csproj" />
+      <ExcludedProjects Include="..\DynamicUIFramework\DynamicUIFramework.csproj" />
+      <ExcludedProjects Include="..\PredictorPatchFramework\PredictorPatchFramework.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AllProjects Include="..\**\*.csproj" Exclude="@(ExcludedProjects)" />
+    </ItemGroup>
+
+    <!-- Loop over each project to read version and copy files -->
+    <ItemGroup>
+      <NonDependencyProjectManifests Include="@(AllProjects->'%(RootDir)%(Directory)manifest.json')">
+        <ProjectFile>%(Filename)</ProjectFile>
+        <ProjectDir>%(RootDir)%(Directory)</ProjectDir>
+      </NonDependencyProjectManifests>
+    </ItemGroup>
+
+    <!-- Iterate through each manifest file to get the version and copy files -->
+    <GetVersionTask Condition="Exists('%(AllProjects.Identity)')" ProjectPath="%(AllProjects.Identity)">
+      <Output TaskParameter="FullOutputPath" ItemName="ProjectFilePath" />
+    </GetVersionTask>
+
+    <!-- Create the output directory if it doesn't exist -->
+    <RemoveDir Directories="$(OutputDir)" Condition="Exists('$(OutputDir)')" />
+    <MakeDir Directories="$(OutputDir)" />
+
+    <!-- Copy output -->
+    <Copy SourceFiles="@(ProjectFilePath)" DestinationFolder="$(OutputDir)" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

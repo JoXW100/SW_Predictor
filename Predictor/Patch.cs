@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using PredictorPatchFramework;
+using PredictorPatchFramework.Extentions;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using PredictorPatchFramework.Extentions;
 
 namespace Predictor
 {

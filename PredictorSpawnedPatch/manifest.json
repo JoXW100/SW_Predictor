@@ -1,0 +1,16 @@
+{
+  "Name": "Predictor Spawned Patch",
+  "Author": "JoXW",
+  "Version": "1.0.2",
+  "Description": "Predicts quality of spawned items and forage.",
+  "UniqueID": "JoXW.PredictorSpawnedPatch",
+  "EntryDll": "PredictorSpawnedPatch.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:21332@SpawnedPatch" ],
+  "Dependencies": [
+    {
+      "UniqueID": "JoXW.Predictor",
+      "IsRequired": true
+    }
+  ]
+}

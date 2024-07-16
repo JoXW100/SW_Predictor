@@ -15,7 +15,7 @@ namespace Predictor
         public static Color MenuBackgroundColor => new(0.1f, 0.1f, 0.1f, ModEntry.Instance.Config.MenuAlpha);
         public static Vector2 MenuBackgroundPadding => ModEntry.Instance.Config.MenuType == 1
             ? Vector2.Zero
-            : Vector2.One * 4f * Ratio * ModEntry.Instance.Config.MenuScale;
+            : Vector2.One * 6f * Ratio * ModEntry.Instance.Config.MenuScale;
         public static Vector4 MenuPadding => (Vector4.One * 4f * UIScale + new Vector4(MenuBackgroundPadding.Y, MenuBackgroundPadding.X, MenuBackgroundPadding.Y, MenuBackgroundPadding.X)) * ModEntry.Instance.Config.MenuScale;
         public static Vector2 MenuSpacing => Vector2.One * 4f * UIScale * ModEntry.Instance.Config.MenuScale;
         public static Vector2 MenuInnerSpacing => Vector2.One * UIScale * ModEntry.Instance.Config.MenuScale;
