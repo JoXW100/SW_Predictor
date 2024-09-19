@@ -12,5 +12,9 @@
   "options.ShowLadders": "Show Ladders",
   "options.ShowLadders.desc": "Draws ladder/shaft icons where they would spawn.",
   "options.MonstersHideLadders": "Monsters Hide Ladders",
-  "options.MonstersHideLadders.desc": "Hides ladder locations while monsters are alive."
+  "options.MonstersHideLadders.desc": "Hides ladder locations while monsters are alive.",
+  "options.LadderColor": "Ladder Outline Color",
+  "options.LadderColor.desc": "The outline color of tiles with a ladder predicted.",
+  "options.ShaftColor": "Shaft Outline Color",
+  "options.ShaftColor.desc": "The outline color of tiles with a shaft predicted."
 }

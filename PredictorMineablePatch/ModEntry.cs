@@ -1,4 +1,5 @@
 ﻿using PredictorPatchFramework;
+using PredictorPatchFramework.Extentions;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 
@@ -119,6 +120,20 @@ namespace PredictorMineablePatch
                 tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MonstersHideLadders)}.desc"),
                 getValue: () => Config.MonstersHideLadders,
                 setValue: value => Config.SetProperty(ref Config.MonstersHideLadders, value, nameof(Config.MonstersHideLadders))
+            );
+            menu.AddColorOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.LadderColor)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.LadderColor)}.desc"),
+                getValue: () => Config.LadderColor,
+                setValue: value => Config.SetProperty(ref Config.LadderColor, value, nameof(Config.LadderColor))
+            );
+            menu.AddColorOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.ShaftColor)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShaftColor)}.desc"),
+                getValue: () => Config.ShaftColor,
+                setValue: value => Config.SetProperty(ref Config.ShaftColor, value, nameof(Config.ShaftColor))
             );
         }
     }

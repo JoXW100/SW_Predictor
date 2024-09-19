@@ -8,5 +8,9 @@
   "options.ShowOutlines": "Show Outlines",
   "options.ShowOutlines.desc": "Draws outlines around lootable garbage cans.",
   "options.ShowNearbyNPCWarning": "Show NPC Warning",
-  "options.ShowNearbyNPCWarning.desc": "Draws a warning outline around garbage cans that have an npc nearby that would react negativeley"
+  "options.ShowNearbyNPCWarning.desc": "Draws a warning outline around garbage cans that have an npc nearby that would react negativeley",
+  "options.GarbageCanOkColor": "Outline Color",
+  "options.GarbageCanOkColor.desc": "The garbage can outline color.",
+  "options.GarbageCanWarnColor": "Warning Outline Color",
+  "options.GarbageCanWarnColor.desc": "The garbage can outline color when warning for a nearby NPC."
 }

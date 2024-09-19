@@ -12,13 +12,16 @@ namespace Predictor
         // Styling
         public float UIScale => Utils.UIScale;
         public float MenuScale => ModEntry.Instance.Config.MenuScale;
+        public float OutlineWidth => ModEntry.Instance.Config.OutlineWidth;
+        public float ThickOutlineWidth => ModEntry.Instance.Config.ThickOutlineWidth;
+
         public IUIDrawable MenuBackground => Utils.MenuBackground;
         public Vector4 MenuPadding => Utils.MenuPadding;
         public Vector2 MenuSpacing => Utils.MenuSpacing;
         public Vector2 MenuInnerSpacing => Utils.MenuInnerSpacing;
         public Color ItemColor => Utils.ItemColor;
         public Color TextColor => Utils.TextColor;
-        public Color OutlineColor => Color.Red;
+        public Color OutlineColor => Utils.OutlineColor;
         // Global elements
         public IUIElement RootUIElement => ModEntry.Instance.RootUIElement;
         public IUIDrawable? Tooltips

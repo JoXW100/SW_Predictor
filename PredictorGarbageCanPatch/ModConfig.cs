@@ -1,4 +1,7 @@
-﻿namespace PredictorGarbageCanPatch
+﻿using Microsoft.Xna.Framework;
+using xTile.Tiles;
+
+namespace PredictorGarbageCanPatch
 {
     internal class ProperyChangedEventArgs : EventArgs
     {
@@ -20,6 +23,9 @@
         public bool ShowItems = true;
         public bool ShowOutlines = true;
         public bool ShowNearbyNPCWarning = true;
+
+        public Color GarbageCanOkColor = Color.Green;
+        public Color GarbageCanWarnColor = Color.Red;
 
         public void SetProperty<T>(ref T property, T value, string name) where T : notnull
         {

@@ -10,6 +10,9 @@ namespace PredictorPatchFramework
         bool IsLazy { get; }
         float UIScale { get; }
         float MenuScale { get; }
+        float OutlineWidth { get; }
+        float ThickOutlineWidth { get; }
+
         IUIDrawable MenuBackground { get; }
         Vector4 MenuPadding { get; }
         Vector2 MenuSpacing { get; }

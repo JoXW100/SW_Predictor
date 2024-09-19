@@ -29,9 +29,15 @@ namespace Predictor.Framework
         // Menu
         public int MenuOffsetX = 4;
         public int MenuOffsetY = 4;
-        public int MenuType = 0;
+        public int MenuType = 1;
+        public float MenuBorderWidth = 5f;
         public float MenuScale = 1f;
-        public float MenuAlpha = 0.8f;
+        public float OutlineWidth = 1f;
+        public float ThickOutlineWidth = 4f;
+
+        public Color OutlineColor = Color.Red;
+        public Color MenuBackgroundColor = new((byte)25, (byte)25, (byte)25, (byte)200);
+        public Color MenuTextColor = Color.White;
 
         public Point GetMenuOffset()
         {

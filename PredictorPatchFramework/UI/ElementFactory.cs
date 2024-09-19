@@ -89,14 +89,14 @@ namespace PredictorPatchFramework.UI
             return label;
         }
 
-        public static Label CreateUpdatingLabel(Func<string> text, SpriteFont? font = null, Color? color = null)
+        public static Label CreateUpdatingLabel(Func<string> textFactory, SpriteFont? font = null, Color? color = null)
         {
-            var label = new Label(text.Invoke(), font, color);
+            var label = new Label(textFactory.Invoke(), font, color);
             label.OnDrawStart += (s, _) =>
             {
                 if (s is Label item)
                 {
-                    item.Text = text.Invoke();
+                    ((Label) s).Text = textFactory.Invoke();
                 }
             };
             return label;

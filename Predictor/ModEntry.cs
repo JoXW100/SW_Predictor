@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using DynamicUIFramework.Elements;
 using PredictorPatchFramework;
+using PredictorPatchFramework.Extentions;
 using DynamicUIFramework;
 
 namespace Predictor
@@ -305,12 +306,57 @@ namespace Predictor
             );
             menu.AddNumberOption(
                 mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.MenuAlpha)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuAlpha)}.desc"),
-                getValue: () => Config.MenuAlpha,
-                setValue: value => Config.SetProperty(ref Config.MenuAlpha, value, nameof(Config.MenuAlpha)),
+                name: () => Helper.Translation.Get($"options.{nameof(Config.MenuBorderWidth)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuBorderWidth)}.desc"),
+                getValue: () => Config.MenuBorderWidth,
+                setValue: value => Config.SetProperty(ref Config.MenuBorderWidth, value, nameof(Config.MenuBorderWidth)),
                 min: 0f,
-                max: 1f
+                max: 32f
+            );
+            menu.AddColorOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.MenuBackgroundColor)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuBackgroundColor)}.desc"),
+                getValue: () => Config.MenuBackgroundColor,
+                setValue: value => Config.SetProperty(ref Config.MenuBackgroundColor, value, nameof(Config.MenuBackgroundColor))
+            );
+            menu.AddColorOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.MenuTextColor)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuTextColor)}.desc"),
+                getValue: () => Config.MenuTextColor,
+                setValue: value => Config.SetProperty(ref Config.MenuTextColor, value, nameof(Config.MenuTextColor))
+            );
+            #endregion
+            #region Outlines
+            menu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => Helper.Translation.Get("config.outlines.title")
+            );
+            menu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.OutlineWidth)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.OutlineWidth)}.desc"),
+                getValue: () => Config.OutlineWidth,
+                setValue: value => Config.SetProperty(ref Config.OutlineWidth, value, nameof(Config.OutlineWidth)),
+                min: 0f,
+                max: 32f
+            );
+            menu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.ThickOutlineWidth)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ThickOutlineWidth)}.desc"),
+                getValue: () => Config.ThickOutlineWidth,
+                setValue: value => Config.SetProperty(ref Config.ThickOutlineWidth, value, nameof(Config.ThickOutlineWidth)),
+                min: 0f,
+                max: 32f
+            );
+            menu.AddColorOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.OutlineColor)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.OutlineColor)}.desc"),
+                getValue: () => Config.OutlineColor,
+                setValue: value => Config.SetProperty(ref Config.OutlineColor, value, nameof(Config.OutlineColor))
             );
             #endregion
         }

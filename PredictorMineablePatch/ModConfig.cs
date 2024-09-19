@@ -1,4 +1,6 @@
-﻿namespace PredictorMineablePatch
+﻿using Microsoft.Xna.Framework;
+
+namespace PredictorMineablePatch
 {
     internal class ProperyChangedEventArgs : EventArgs
     {
@@ -22,6 +24,8 @@
         public bool ShowOutlines = true;
         public bool ShowLadders = true;
         public bool MonstersHideLadders = false;
+        public Color LadderColor = Color.Green;
+        public Color ShaftColor = Color.GreenYellow;
 
         public void SetProperty<T>(ref T property, T value, string name) where T : notnull
         {

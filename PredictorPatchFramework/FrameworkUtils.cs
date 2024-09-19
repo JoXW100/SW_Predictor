@@ -57,7 +57,7 @@ namespace PredictorPatchFramework
             }
         }
 
-        public static void DrawContextItems(SpriteBatch spriteBatch, Dictionary<Vector2, PredictionContext> context, bool drawItems = true, bool drawOutline = false, int width = 1)
+        public static void DrawContextItems(SpriteBatch spriteBatch, Dictionary<Vector2, PredictionContext> context, bool drawItems = true, bool drawOutline = false, int numTilesWidth = 1)
         {
             if ((!drawItems && !drawOutline) || context.Count < 1)
             {
@@ -65,7 +65,7 @@ namespace PredictorPatchFramework
             }
 
             float ratio = Ratio;
-            float size = width * TileSize * ratio;
+            float size = numTilesWidth * TileSize * ratio;
             double angle = Game1.currentGameTime.TotalGameTime.Milliseconds * Math.PI / 512.0;
             var scale = 2.5f * (1f + (float)(Math.Cos(angle) + 1f) * 0.03f) * ratio;
             var scaleOffset = Vector2.One * PredictionItem.TextureSize * 0.5f * scale;
@@ -87,7 +87,7 @@ namespace PredictorPatchFramework
                 }
                 if (drawOutline)
                 {
-                    spriteBatch.DrawBorder(new Rectangle((int)pos.X, (int)pos.Y, (int)size, (int)size), 1, API.OutlineColor);
+                    spriteBatch.DrawBorder(new Rectangle((int)pos.X, (int)pos.Y, (int)size, (int)size), API.OutlineWidth, API.OutlineColor);
                 }
             }
         }
@@ -95,11 +95,11 @@ namespace PredictorPatchFramework
         public static void DrawOutlines(SpriteBatch spriteBatch, IEnumerable<Vector2> positions, int width = 1)
         {
             float ratio = Ratio;
-            float size = width * FrameworkUtils.TileSize * ratio;
+            float size = width * TileSize * ratio;
             foreach (var posx in positions)
             {
-                var pos = Game1.GlobalToLocal(Game1.viewport, posx * FrameworkUtils.TileSize) * ratio;
-                spriteBatch.DrawBorder(new Rectangle((int)pos.X, (int)pos.Y, (int)size, (int)size), 1, API.OutlineColor);
+                var pos = Game1.GlobalToLocal(Game1.viewport, posx * TileSize) * ratio;
+                spriteBatch.DrawBorder(new Rectangle((int)pos.X, (int)pos.Y, (int)size, (int)size), API.OutlineWidth, API.OutlineColor);
             }
         }
 

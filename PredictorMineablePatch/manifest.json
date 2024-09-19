@@ -1,7 +1,7 @@
 {
   "Name": "Predictor Mineable Patch",
   "Author": "JoXW",
-  "Version": "1.0.1",
+  "Version": "1.0.2",
   "Description": "Predicts item drops of mineable objects.",
   "UniqueID": "JoXW.PredictorMineablePatch",
   "EntryDll": "PredictorMineablePatch.dll",

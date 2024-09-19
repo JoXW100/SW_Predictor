@@ -14,8 +14,8 @@ namespace PredictorMineablePatch
     internal sealed class Patch : PatchWithContexBase<PredictionContext>
     {
         public override string Name => ModEntry.Instance.ModManifest.Name;
-        public static Color LadderColor => Color.Green;
-        public static Color ShaftColor => Color.GreenYellow;
+        public static Color LadderColor => ModEntry.Instance.Config.LadderColor;
+        public static Color ShaftColor => ModEntry.Instance.Config.ShaftColor;
 
         private readonly Texture2D m_mineTexture;
         private readonly Rectangle m_shaftSourceRect;
@@ -86,7 +86,7 @@ namespace PredictorMineablePatch
                     var area = new Rectangle((int)pos.X, (int)pos.Y, (int)size, (int)size);
                     var color = (bool)shaft! ? ShaftColor : LadderColor;
                     spriteBatch.Draw(m_mineTexture, area, (bool)shaft ? m_shaftSourceRect : m_ladderSourceRect, new Color(1f, 1f, 1f, 0.5f));
-                    spriteBatch.DrawBorder(area, 4, color);
+                    spriteBatch.DrawBorder(area, FrameworkUtils.API.ThickOutlineWidth, color);
                 }
 
                 if (ModEntry.Instance.Config.ShowItems)
@@ -103,7 +103,7 @@ namespace PredictorMineablePatch
                 if (ModEntry.Instance.Config.ShowOutlines && drawOutline)
                 {
                     var area = new Rectangle((int)pos.X, (int)pos.Y, (int)size, (int)size);
-                    spriteBatch.DrawBorder(area, 1, FrameworkUtils.API.OutlineColor);
+                    spriteBatch.DrawBorder(area, FrameworkUtils.API.OutlineWidth, FrameworkUtils.API.OutlineColor);
                 }
             }
         }

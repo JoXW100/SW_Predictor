@@ -1,7 +1,7 @@
 {
   "Name": "Predictor Minigames Patch",
   "Author": "JoXW",
-  "Version": "1.0.1",
+  "Version": "1.0.2",
   "Description": "Predicts minigame outcomes.",
   "UniqueID": "JoXW.PredictorMinigamesPatch",
   "EntryDll": "PredictorMinigamesPatch.dll",

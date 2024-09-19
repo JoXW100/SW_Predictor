@@ -84,47 +84,17 @@ namespace PredictorMinigamesPatch
                 return;
             }
 
-            var minigame = Minigame;
-            if (Game1.currentMinigame is Slots slots && ModEntry.Instance.Config.ShowSlotsOutcomes && minigame != MinigameType.Slots)
+            switch (Game1.currentMinigame)
             {
-                Minigame = MinigameType.Slots;
-                Menu.Children = new[] {
-                    ElementFactory.CreateUpdatingLabel(() =>
-                    {
-                        return string.Format(Helper.Translation.Get("menu.SlotsWinMultiplierLabel"), slots.Predict_slotResults(new PredictionContext()));
-                    }, Game1.smallFont, FrameworkUtils.API.TextColor)
-                };
-            }
-            else if (Game1.currentMinigame is CalicoJack calicoJack && ModEntry.Instance.Config.ShowCalicoJackOutcomes && minigame != MinigameType.CalicoJack)
-            {
-                Minigame = MinigameType.CalicoJack;
-                Menu.Children = new[] {
-                    ElementFactory.CreateUpdatingLabel(() =>
-                    {
-                        var ctx = new PredictionContext(calicoJack.CloneCurrentRandom());
-                        var hitPlayerCard = calicoJack.PredictCalicoJackHitCard(ctx);
-                        return string.Format(Helper.Translation.Get("menu.CalicoNextHitPlayerCardLabel"), hitPlayerCard);
-                    }, Game1.smallFont, FrameworkUtils.API.TextColor),
-                    ElementFactory.CreateUpdatingLabel(() =>
-                    {
-                        var ctx = new PredictionContext(calicoJack.CloneCurrentRandom());
-                        calicoJack.PredictCalicoJackHitCard(ctx);
-                        var hitDelaerCard = calicoJack.PredictCalicoJackNextDealerCard(ctx);
-                        return string.Format(Helper.Translation.Get("menu.CalicoNextHitDealerCardLabel"), hitDelaerCard);
-                    }, Game1.smallFont, FrameworkUtils.API.TextColor),
-                    ElementFactory.CreateUpdatingLabel(() =>
-                    {
-                        var ctx = new PredictionContext(calicoJack.CloneCurrentRandom());
-                        var result = calicoJack.PredictCalicoJackStandResult(ctx);
-                        return result
-                            ? Helper.Translation.Get("menu.CalicoNextStandOutcomeLabel.win")
-                            : Helper.Translation.Get("menu.CalicoNextStandOutcomeLabel.loss");
-                    }, Game1.smallFont, FrameworkUtils.API.TextColor)
-                };
-            }
-            else if (minigame != MinigameType.None)
-            {
-                Minigame = MinigameType.None;
+                case Slots:
+                    ShowSlotsOutcomes();
+                    break;
+                case CalicoJack:
+                    ShowCalicoJackOutcomes();
+                    break;
+                default:
+                    Minigame = MinigameType.None;
+                    break;
             }
         }
 
@@ -137,6 +107,87 @@ namespace PredictorMinigamesPatch
 
             var offset = FrameworkUtils.API.GetMenuOffset();
             Menu.Draw(e.SpriteBatch, offset);
+        }
+
+        private void ShowSlotsOutcomes()
+        {
+            if (!ModEntry.Instance.Config.ShowSlotsOutcomes)
+            {
+                Minigame = MinigameType.None;
+                return;
+            }
+
+            if (Minigame is MinigameType.Slots)
+            {
+                return;
+            }
+
+            Minigame = MinigameType.Slots;
+            Menu.Children = new[] {
+                ElementFactory.CreateUpdatingLabel(() =>
+                {
+                    if (Game1.currentMinigame is not Slots slots)
+                    {
+                        return "N/A";
+                    }
+
+                    return string.Format(Helper.Translation.Get("menu.SlotsWinMultiplierLabel"), slots.Predict_slotResults(new PredictionContext()));
+                }, Game1.smallFont, FrameworkUtils.API.TextColor)
+            };
+        }
+
+        private void ShowCalicoJackOutcomes()
+        {
+            if (!ModEntry.Instance.Config.ShowCalicoJackOutcomes)
+            {
+                Minigame = MinigameType.None;
+                return;
+            }
+
+            if (Minigame is MinigameType.CalicoJack)
+            {
+                return;
+            }
+
+            Minigame = MinigameType.CalicoJack;
+            Menu.Children = new[] {
+                ElementFactory.CreateUpdatingLabel(() =>
+                {
+                    if (Game1.currentMinigame is not CalicoJack calicoJack)
+                    {
+                        return "N/A";
+                    }
+
+                    var ctx = new PredictionContext(calicoJack.CloneCurrentRandom());
+                    var hitPlayerCard = calicoJack.PredictCalicoJackHitCard(ctx);
+                    return string.Format(Helper.Translation.Get("menu.CalicoNextHitPlayerCardLabel"), hitPlayerCard);
+                }, Game1.smallFont, FrameworkUtils.API.TextColor),
+                ElementFactory.CreateUpdatingLabel(() =>
+                {
+                    if (Game1.currentMinigame is not CalicoJack calicoJack)
+                    {
+                        return "N/A";
+                    }
+
+                    var ctx = new PredictionContext(calicoJack.CloneCurrentRandom());
+                    calicoJack.PredictCalicoJackHitCard(ctx); // skip one prediction
+                    var hitDelaerCard = calicoJack.PredictCalicoJackNextDealerCard(ctx);
+                    return string.Format(Helper.Translation.Get("menu.CalicoNextHitDealerCardLabel"), hitDelaerCard);
+                }, Game1.smallFont, FrameworkUtils.API.TextColor),
+                ElementFactory.CreateUpdatingLabel(() =>
+                {
+                    if (Game1.currentMinigame is not CalicoJack calicoJack)
+                    {
+                        return "N/A";
+                    }
+
+                    var ctx = new PredictionContext(calicoJack.CloneCurrentRandom());
+                    var result = calicoJack.PredictCalicoJackStandResult(ctx);
+                    return result
+                        ? Helper.Translation.Get("menu.CalicoNextStandOutcomeLabel.win")
+                        : Helper.Translation.Get("menu.CalicoNextStandOutcomeLabel.loss");
+                }, Game1.smallFont, FrameworkUtils.API.TextColor)
+            };
         }
     }
 }

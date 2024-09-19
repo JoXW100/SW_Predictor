@@ -1,4 +1,5 @@
 ﻿using PredictorPatchFramework;
+using PredictorPatchFramework.Extentions;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 
@@ -105,6 +106,20 @@ namespace PredictorGarbageCanPatch
                 tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowNearbyNPCWarning)}.desc"),
                 getValue: () => Config.ShowNearbyNPCWarning,
                 setValue: value => Config.SetProperty(ref Config.ShowNearbyNPCWarning, value, nameof(Config.ShowNearbyNPCWarning))
+            );
+            menu.AddColorOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.GarbageCanOkColor)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.GarbageCanOkColor)}.desc"),
+                getValue: () => Config.GarbageCanOkColor,
+                setValue: value => Config.SetProperty(ref Config.GarbageCanOkColor, value, nameof(Config.GarbageCanOkColor))
+            );
+            menu.AddColorOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get($"options.{nameof(Config.GarbageCanWarnColor)}"),
+                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.GarbageCanWarnColor)}.desc"),
+                getValue: () => Config.GarbageCanWarnColor,
+                setValue: value => Config.SetProperty(ref Config.GarbageCanWarnColor, value, nameof(Config.GarbageCanWarnColor))
             );
         }
     }

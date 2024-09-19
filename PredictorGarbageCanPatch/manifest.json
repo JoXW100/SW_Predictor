@@ -1,7 +1,7 @@
 {
   "Name": "Predictor Garbage Can Patch",
   "Author": "JoXW",
-  "Version": "1.0.1",
+  "Version": "1.0.2",
   "Description": "Predicts garbage can drops and npc reactions.",
   "UniqueID": "JoXW.PredictorGarbageCanPatch",
   "EntryDll": "PredictorGarbageCanPatch.dll",

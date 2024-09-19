@@ -3,6 +3,7 @@
 
   "config.general.title": "General",
   "config.menus.title": "Menus",
+  "config.outlines.title": "Outlines",
 
   "options.Enabled": "Enable Mod",
   "options.Enabled.desc": "If the mod functionality is enabled.",
@@ -23,6 +24,16 @@
   "options.MenuType.desc": "The type of background to use for menus.",
   "options.MenuScale": "Menu scale",
   "options.MenuScale.desc": "Scales the size of the menu.",
-  "options.MenuAlpha": "Menu alpha",
-  "options.MenuAlpha.desc": "The transparency of the menu, where 0 is fully transparent, and 1 is fully opaque."
+  "options.MenuBorderWidth": "Menu border width",
+  "options.MenuBorderWidth.desc": "The width of the 'Simple' menu border.",
+  "options.MenuBackgroundColor": "Menu background color",
+  "options.MenuBackgroundColor.desc": "The color of the 'Simple' menu background.",
+  "options.MenuTextColor": "Menu text color",
+  "options.MenuTextColor.desc": "The color of the 'Simple' menu text.",
+  "options.OutlineWidth": "Outline width",
+  "options.OutlineWidth.desc": "The width of outlines.",
+  "options.ThickOutlineWidth": "Thick outline width",
+  "options.ThickOutlineWidth.desc": "The width of thick outlines.",
+  "options.OutlineColor": "Outline Color",
+  "options.OutlineColor.desc": "The color of outlines."
 }

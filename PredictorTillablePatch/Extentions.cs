@@ -163,9 +163,8 @@ namespace PredictorTillablePatch
 
         private static string? Predict_HandleTreasureTileProperty(this GameLocation location, PredictionContext _ctx, int xLocation, int yLocation, bool detectOnly)
         {
-            // TODO: Optimize & remove
-            var text = location.doesTileHaveProperty(xLocation, yLocation, "Treasure", "Back");
-            if (text == null)
+            var tile = location.map.GetLayer("Back")?.Tiles[xLocation, yLocation];
+            if (tile is null || !(tile.Properties.TryGetValue("Treasure", out var text) || tile.TileIndexProperties.TryGetValue("Treasure", out text)) || text is null)
             {
                 return null;
             }

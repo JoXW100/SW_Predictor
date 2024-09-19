@@ -9,9 +9,6 @@ namespace PredictorGarbageCanPatch
 {
     internal sealed class Patch : PatchWithContexBase<PredictionContext>
     {
-        public static Color GarbageCanOkColor => Color.Green;
-        public static Color GarbageCanWarnColor => Color.Red;
-
         public override string Name => ModEntry.Instance.ModManifest.Name;
 
         public Patch(IModHelper helper, IMonitor monitor) : base(helper, monitor)
@@ -80,12 +77,12 @@ namespace PredictorGarbageCanPatch
                     if (ModEntry.Instance.Config.ShowNearbyNPCWarning)
                     {
                         color = (ctx.Properties.TryGetValue("affected", out var npcs) && npcs is List<NPC> list && list.Any())
-                            ? GarbageCanWarnColor
-                            : GarbageCanOkColor;
+                            ? ModEntry.Instance.Config.GarbageCanWarnColor
+                            : ModEntry.Instance.Config.GarbageCanOkColor;
                     }
 
                     var area = new Rectangle((int)pos.X, (int)pos.Y, (int)size, (int)size);
-                    spriteBatch.DrawBorder(area, 4, color);
+                    spriteBatch.DrawBorder(area, FrameworkUtils.API.ThickOutlineWidth, color);
                 }
             }
         }
