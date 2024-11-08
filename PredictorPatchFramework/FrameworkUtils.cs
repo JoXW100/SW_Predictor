@@ -5,7 +5,7 @@ using StardewModdingAPI;
 using StardewValley;
 using DynamicUIFramework;
 using DynamicUIFramework.Elements;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using StardewValley.TokenizableStrings;
 using PredictorPatchFramework.UI;
 

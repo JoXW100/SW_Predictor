@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace PredictorPatchFramework.Extentions
+namespace PredictorPatchFramework.Extensions
 {
-    public static class EnumerableExtentions
+    public static class EnumerableExtensions
     {
         public static bool EmptyOrNull<T>([NotNullWhen(false)] this IEnumerable<T>? collection)
         {

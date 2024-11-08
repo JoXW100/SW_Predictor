@@ -1,5 +1,4 @@
-﻿using StardewValley.Enchantments;
-using StardewValley.Extensions;
+﻿using StardewValley.Extensions;
 using StardewValley.Internal;
 using StardewValley.Tools;
 using StardewValley.Locations;
@@ -15,7 +14,7 @@ using Object = StardewValley.Object;
 
 namespace PredictorFishingPatch
 {
-    internal static class Extentions
+    internal static class Extensions
     {
         public static IMonitor ModLog => ModEntry.Instance.Monitor;
 

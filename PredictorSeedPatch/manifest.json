@@ -1,0 +1,16 @@
+{
+  "Name": "Predictor Seed Patch",
+  "Author": "JoXW",
+  "Version": "1.0.0",
+  "Description": "Predicts quality of grown crops when planting seeds.",
+  "UniqueID": "JoXW.PredictorSeedPatch",
+  "EntryDll": "PredictorSeedPatch.dll",
+  "MinimumApiVersion": "4.1.0",
+  "UpdateKeys": [ "Nexus:21332@SeedPatch" ],
+  "Dependencies": [
+    {
+      "UniqueID": "JoXW.Predictor",
+      "IsRequired": true
+    }
+  ]
+}

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PredictorPatchFramework;
 using PredictorPatchFramework.UI;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.TokenizableStrings;

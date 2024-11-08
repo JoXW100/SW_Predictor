@@ -59,28 +59,33 @@ namespace PredictorMinigamesPatch
                 FrameworkUtils.API.RegisterPatch(Patch);
             }
 
-            var menu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (menu is null)
+            FrameworkUtils.API.RegisterPatchConfig(
+            manifest: ModManifest,
+            reset: () => Config = new ModConfig(),
+            save: () => Helper.WriteConfig(Config),
+            registerOptions: api =>
             {
-                return;
-            }
-
-            menu.Register(
-                mod: ModManifest,
-                reset: () => Config = new ModConfig(),
-                save: () => Helper.WriteConfig(Config)
-            );
-            menu.AddSectionTitle(
-                mod: ModManifest, 
-                text: () => Helper.Translation.Get("config.general.title")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
-                getValue: () => Config.Enabled,
-                setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
-            );
+                api.AddSectionTitle(() => Helper.Translation.Get("config.general.title"));
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
+                    getValue: () => Config.Enabled,
+                    setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
+                );
+                api.AddSectionTitle(() => Helper.Translation.Get("config.features.title"));
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShowSlotsOutcomes)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowSlotsOutcomes)}.desc"),
+                    getValue: () => Config.Enabled,
+                    setValue: value => Config.SetProperty(ref Config.ShowSlotsOutcomes, value, nameof(Config.ShowSlotsOutcomes))
+                );
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShowCalicoJackOutcomes)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowCalicoJackOutcomes)}.desc"),
+                    getValue: () => Config.Enabled,
+                    setValue: value => Config.SetProperty(ref Config.ShowCalicoJackOutcomes, value, nameof(Config.ShowCalicoJackOutcomes))
+                );
+            });
         }
     }
 }

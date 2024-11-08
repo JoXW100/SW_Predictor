@@ -2,14 +2,14 @@
 using StardewValley.Locations;
 using StardewValley;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using StardewValley.Enchantments;
 using StardewValley.Tools;
 using Microsoft.Xna.Framework;
 
 namespace PredictorTillablePatch
 {
-    internal static class Extentions
+    internal static class Extensions
     {
         public static string Predict_checkForBuriedItem(this GameLocation location, PredictionContext _ctx, int xLocation, int yLocation, bool explosion, bool detectOnly, Farmer who)
         {
@@ -29,10 +29,10 @@ namespace PredictorTillablePatch
             var num = 0.5f;
             if (!location.IsFarm && location.IsOutdoors && location.GetSeason() is Season.Winter && random.NextDouble() < 0.08 && !explosion && !detectOnly && !(location is Desert))
             {
-                CreateItemExtentions.Predict_createObjectDebris(_ctx, random.Choose("(O)412", "(O)416"), xLocation, yLocation);
+                CreateItemExtensions.Predict_createObjectDebris(_ctx, random.Choose("(O)412", "(O)416"), xLocation, yLocation);
                 if (flag && random.NextDouble() < (double)num)
                 {
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, random.Choose("(O)412", "(O)416"), xLocation, yLocation);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, random.Choose("(O)412", "(O)416"), xLocation, yLocation);
                 }
 
                 return "";
@@ -46,10 +46,10 @@ namespace PredictorTillablePatch
                     return "Item";
                 }
 
-                CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)330", xLocation, yLocation);
+                CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)330", xLocation, yLocation);
                 if (flag && random.NextDouble() < (double)num)
                 {
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)330", xLocation, yLocation);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)330", xLocation, yLocation);
                 }
 
                 return "";
@@ -148,11 +148,11 @@ namespace PredictorTillablePatch
                     id = "(O)78";
                 }
 
-                CreateItemExtentions.Predict_createObjectDebris(_ctx, id, xLocation, yLocation, who.UniqueMultiplayerID, location);
+                CreateItemExtensions.Predict_createObjectDebris(_ctx, id, xLocation, yLocation, who.UniqueMultiplayerID, location);
                 bool num = who.CurrentTool is Hoe && who.CurrentTool.hasEnchantmentOfType<GenerousEnchantment>();
                 if (num && _ctx.Random.NextDouble() < 0.25)
                 {
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, id, xLocation, yLocation, who.UniqueMultiplayerID, location);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, id, xLocation, yLocation, who.UniqueMultiplayerID, location);
                 }
 
                 return "";
@@ -186,16 +186,16 @@ namespace PredictorTillablePatch
                     {
                         if (ArgUtility.TryGet(array, 1, out var id, out error))
                         {
-                            CreateItemExtentions.Predict_createObjectDebris(_ctx, id, xLocation, yLocation, location);
+                            CreateItemExtensions.Predict_createObjectDebris(_ctx, id, xLocation, yLocation, location);
                         }
 
                         break;
                     }
                 case "CaveCarrot":
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)78", xLocation, yLocation, location: location);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)78", xLocation, yLocation, location: location);
                     break;
                 case "Coins":
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)330", xLocation, yLocation, location: location);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)330", xLocation, yLocation, location: location);
                     break;
                 case "Coal":
                 case "Copper":
@@ -213,7 +213,7 @@ namespace PredictorTillablePatch
                         };
                         if (ArgUtility.TryGetInt(array, 1, out var id, out error))
                         {
-                            CreateItemExtentions.Predict_createDebris(_ctx, debrisType, xLocation, yLocation, id, location);
+                            CreateItemExtensions.Predict_createDebris(_ctx, debrisType, xLocation, yLocation, id, location);
                         }
 
                         break;
@@ -222,7 +222,7 @@ namespace PredictorTillablePatch
                     {
                         if (ArgUtility.TryGet(array, 1, out var id, out error))
                         {
-                            CreateItemExtentions.Predict_createObjectDebris(_ctx, id, xLocation, yLocation, location: location);
+                            CreateItemExtensions.Predict_createObjectDebris(_ctx, id, xLocation, yLocation, location: location);
                         }
 
                         break;
@@ -232,7 +232,7 @@ namespace PredictorTillablePatch
                         if (ArgUtility.TryGet(array, 1, out var id, out error))
                         {
                             var item = PredictionItem.Create(id);
-                            CreateItemExtentions.Predict_createItemDebris(_ctx, item, new Vector2(xLocation, yLocation), -1, location);
+                            CreateItemExtensions.Predict_createItemDebris(_ctx, item, new Vector2(xLocation, yLocation), -1, location);
                         }
                         break;
                     }

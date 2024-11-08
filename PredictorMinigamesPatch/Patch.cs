@@ -105,8 +105,7 @@ namespace PredictorMinigamesPatch
                 return;
             }
 
-            var offset = FrameworkUtils.API.GetMenuOffset();
-            Menu.Draw(e.SpriteBatch, offset);
+            Menu.Draw(e.SpriteBatch, FrameworkUtils.API.MenuOffset);
         }
 
         private void ShowSlotsOutcomes()

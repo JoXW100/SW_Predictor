@@ -2,7 +2,7 @@
 using StardewModdingAPI.Events;
 using StardewValley;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using StardewValley.Objects;
 using PredictorCrabPotPatch;
 

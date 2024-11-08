@@ -1,11 +1,11 @@
 {
   "Name": "Predictor Mineable Patch",
   "Author": "JoXW",
-  "Version": "1.0.2",
+  "Version": "1.1.0",
   "Description": "Predicts item drops of mineable objects.",
   "UniqueID": "JoXW.PredictorMineablePatch",
   "EntryDll": "PredictorMineablePatch.dll",
-  "MinimumApiVersion": "4.0.0",
+  "MinimumApiVersion": "4.1.0",
   "UpdateKeys": [ "Nexus:21332@MineablePatch" ],
   "Dependencies": [
     {

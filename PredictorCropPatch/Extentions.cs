@@ -8,12 +8,12 @@ using StardewValley.Enchantments;
 using StardewValley.Characters;
 using StardewValley.Objects;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using Object = StardewValley.Object;
 
-namespace PredictorCropPatch.Extentions
+namespace PredictorCropPatch.Extensions
 {
-    public static class HarvestExtentions
+    public static class HarvestExtensions
     {
         public static bool Predict_harvest(this HoeDirt dirt, PredictionContext _ctx, Tool? tool, Vector2 tileLocation)
         {
@@ -72,7 +72,7 @@ namespace PredictorCropPatch.Extentions
                         {
                             for (int i = 0; i < 2; i++)
                             {
-                                CreateItemExtentions.Predict_createItemDebris(_ctx, PredictionItem.Create("(O)771"), new Vector2(tileLocation.X * 64f + 32f, tileLocation.Y * 64f + 32f), -1);
+                                CreateItemExtensions.Predict_createItemDebris(_ctx, PredictionItem.Create("(O)771"), new Vector2(tileLocation.X * 64f + 32f, tileLocation.Y * 64f + 32f), -1);
                             }
                         }
 
@@ -93,7 +93,7 @@ namespace PredictorCropPatch.Extentions
                             @object.Quality = 4;
                         }
 
-                        CreateItemExtentions.Predict_createItemDebris(_ctx, new PredictionItem(@object), new Vector2(tileLocation.X * 64f + 32f, tileLocation.Y * 64f + 32f), -1);
+                        CreateItemExtensions.Predict_createItemDebris(_ctx, new PredictionItem(@object), new Vector2(tileLocation.X * 64f + 32f, tileLocation.Y * 64f + 32f), -1);
                     }
                 }
             }
@@ -155,7 +155,7 @@ namespace PredictorCropPatch.Extentions
                 if (isForcedScytheHarvest)
                 {
                     Vector2 vector = new(xTile, yTile);
-                    CreateItemExtentions.Predict_createItemDebris(_ctx, @object, new Vector2(vector.X * 64f + 32f, vector.Y * 64f + 32f), -1);
+                    CreateItemExtensions.Predict_createItemDebris(_ctx, @object, new Vector2(vector.X * 64f + 32f, vector.Y * 64f + 32f), -1);
                     return true;
                 }
 
@@ -225,7 +225,7 @@ namespace PredictorCropPatch.Extentions
                     }
                     else
                     {
-                        CreateItemExtentions.Predict_createItemDebris(_ctx, item?.GetOne(), new Vector2(xTile * 64 + 32, yTile * 64 + 32), -1);
+                        CreateItemExtensions.Predict_createItemDebris(_ctx, item?.GetOne(), new Vector2(xTile * 64 + 32, yTile * 64 + 32), -1);
                     }
 
                     flag = true;
@@ -265,7 +265,7 @@ namespace PredictorCropPatch.Extentions
                     {
                         if (junimoHarvester == null)
                         {
-                            CreateItemExtentions.Predict_createItemDebris(_ctx, item?.GetOne(), new Vector2(xTile * 64 + 32, yTile * 64 + 32), -1);
+                            CreateItemExtensions.Predict_createItemDebris(_ctx, item?.GetOne(), new Vector2(xTile * 64 + 32, yTile * 64 + 32), -1);
                         }
                         else
                         {
@@ -279,7 +279,7 @@ namespace PredictorCropPatch.Extentions
                         PredictionItem? item2 = PredictionItem.Create("(O)178");
                         if (junimoHarvester == null)
                         {
-                            CreateItemExtentions.Predict_createItemDebris(_ctx, item2?.GetOne(), new Vector2(xTile * 64 + 32, yTile * 64 + 32), -1);
+                            CreateItemExtensions.Predict_createItemDebris(_ctx, item2?.GetOne(), new Vector2(xTile * 64 + 32, yTile * 64 + 32), -1);
                         }
                         else
                         {
@@ -294,7 +294,7 @@ namespace PredictorCropPatch.Extentions
                             PredictionItem? item3 = PredictionItem.Create("(O)770");
                             if (junimoHarvester == null)
                             {
-                                CreateItemExtentions.Predict_createItemDebris(_ctx, item3?.GetOne(), new Vector2(xTile * 64 + 32, yTile * 64 + 32), -1);
+                                CreateItemExtensions.Predict_createItemDebris(_ctx, item3?.GetOne(), new Vector2(xTile * 64 + 32, yTile * 64 + 32), -1);
                             }
                             else
                             {

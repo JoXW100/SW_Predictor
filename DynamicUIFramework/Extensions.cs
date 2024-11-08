@@ -4,7 +4,7 @@ using StardewValley;
 
 namespace DynamicUIFramework
 {
-    public static class Extentions
+    public static class Extensions
     {
         private static Texture2D Pixel => LazyPixel.Value;
 

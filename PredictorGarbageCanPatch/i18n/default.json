@@ -1,6 +1,7 @@
 {
   "config.general.title": "General",
   "config.features.title": "Features",
+
   "options.Enabled": "Enabled",
   "options.Enabled.desc": "Enables/Disables this patch.",
   "options.ShowItems": "Show Items",

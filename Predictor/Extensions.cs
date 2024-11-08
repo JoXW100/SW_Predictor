@@ -1,11 +1,11 @@
-﻿using StardewModdingAPI;
+﻿using DynamicUIFramework;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using DynamicUIFramework;
+using StardewModdingAPI;
 
-namespace PredictorPatchFramework.Extentions
+namespace Predictor
 {
-    public static class IGenericModConfigMenuApiExtentions
+    public static class Extensions
     {
         private const int ColorPreviewSize = 32;
 

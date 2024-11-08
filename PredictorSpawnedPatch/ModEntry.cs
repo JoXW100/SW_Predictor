@@ -59,69 +59,53 @@ namespace PredictorSpawnedPatch
                 FrameworkUtils.API.RegisterPatch(Patch);
             }
 
-            var menu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (menu is null)
+            FrameworkUtils.API.RegisterPatchConfig(
+            manifest: ModManifest,
+            reset: () => Config = new ModConfig(),
+            save: () => Helper.WriteConfig(Config),
+            registerOptions: api =>
             {
-                return;
-            }
-
-            menu.Register(
-                mod: ModManifest,
-                reset: () => Config = new ModConfig(),
-                save: () => Helper.WriteConfig(Config)
-            );
-            menu.AddSectionTitle(
-                mod: ModManifest, 
-                text: () => Helper.Translation.Get("config.general.title")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
-                getValue: () => Config.Enabled,
-                setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
-            );
-            menu.AddSectionTitle(
-                mod: ModManifest,
-                text: () => Helper.Translation.Get("config.features.title")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}.desc"),
-                getValue: () => Config.ShowItems,
-                setValue: value => Config.SetProperty(ref Config.ShowItems, value, nameof(Config.ShowItems))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}.desc"),
-                getValue: () => Config.ShowOutlines,
-                setValue: value => Config.SetProperty(ref Config.ShowOutlines, value, nameof(Config.ShowOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowTrackers)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowTrackers)}.desc"),
-                getValue: () => Config.ShowTrackers,
-                setValue: value => Config.SetProperty(ref Config.ShowTrackers, value, nameof(Config.ShowTrackers))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.TrackerShowLess)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackerShowLess)}.desc"),
-                getValue: () => Config.TrackerShowLess,
-                setValue: value => Config.SetProperty(ref Config.TrackerShowLess, value, nameof(Config.TrackerShowLess))
-            );
-            menu.AddNumberOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.TrackerMaxItemCount)}"),
-                min: 0,
-                max: 100,
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackerMaxItemCount)}.desc"),
-                getValue: () => Config.TrackerMaxItemCount,
-                setValue: value => Config.SetProperty(ref Config.TrackerMaxItemCount, value, nameof(Config.TrackerMaxItemCount))
-            );
+                api.AddSectionTitle(() => Helper.Translation.Get("config.general.title"));
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
+                    getValue: () => Config.Enabled,
+                    setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
+                );
+                api.AddSectionTitle(() => Helper.Translation.Get("config.features.title"));
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}.desc"),
+                    getValue: () => Config.ShowItems,
+                    setValue: value => Config.SetProperty(ref Config.ShowItems, value, nameof(Config.ShowItems))
+                );
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}.desc"),
+                    getValue: () => Config.ShowOutlines,
+                    setValue: value => Config.SetProperty(ref Config.ShowOutlines, value, nameof(Config.ShowOutlines))
+                );
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShowTrackers)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowTrackers)}.desc"),
+                    getValue: () => Config.ShowTrackers,
+                    setValue: value => Config.SetProperty(ref Config.ShowTrackers, value, nameof(Config.ShowTrackers))
+                );
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.TrackerShowLess)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackerShowLess)}.desc"),
+                    getValue: () => Config.TrackerShowLess,
+                    setValue: value => Config.SetProperty(ref Config.TrackerShowLess, value, nameof(Config.TrackerShowLess))
+                );
+                api.AddNumberOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.TrackerMaxItemCount)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.TrackerMaxItemCount)}.desc"),
+                    getValue: () => Config.TrackerMaxItemCount,
+                    setValue: value => Config.SetProperty(ref Config.TrackerMaxItemCount, value, nameof(Config.TrackerMaxItemCount)),
+                    min: 0,
+                    max: 100
+                );
+            });
         }
     }
 }

@@ -6,7 +6,7 @@ using Object = StardewValley.Object;
 
 namespace PredictorCrabPotPatch
 {
-    public static class Extentions
+    public static class Extensions
     {
         public static Random CreateNextDaySaveRandom(double seedA = 0.0, double seedB = 0.0, double seedC = 0.0)
         {

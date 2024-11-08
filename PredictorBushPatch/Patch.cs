@@ -3,7 +3,7 @@ using StardewValley.TerrainFeatures;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 
 namespace PredictorBushPatch
 {

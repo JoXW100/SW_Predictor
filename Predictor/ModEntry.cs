@@ -1,9 +1,7 @@
-﻿using Predictor.Framework;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using DynamicUIFramework.Elements;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
 using DynamicUIFramework;
 
 namespace Predictor
@@ -26,6 +24,8 @@ namespace Predictor
 
     internal class ModEntry : Mod
     {
+        private static ModAPI ModAPI { get; } = new ModAPI();
+
         private static ModEntry? _instance;
         public static ModEntry Instance 
         { 
@@ -34,6 +34,9 @@ namespace Predictor
         }
 
         public ModConfig Config { get; private set; } = new ModConfig();
+
+
+        public IGenericModConfigMenuApi? GenericModConfigAPI { get; private set; } 
 
         internal MultiplayerManager<MultiplayerRootContext> MultiplayerManager = new();
         private List<IPatch> Patches = new();
@@ -140,21 +143,13 @@ namespace Predictor
             Config.PropertyChanged += OnConfigPropertyChanged;
         }
 
-        public override object GetApi()
-        {
-            return new ModAPI();
-        }
+        public override object GetApi() => ModAPI;
 
         private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
         {
             FrameworkUtils.Initialize(Helper);
-            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (configMenu is null)
-            {
-                return;
-            }
-
-            RegisterModConfig(configMenu);
+            GenericModConfigAPI = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            RegisterModConfig();
         }
 
         private void OnSaveLoaded(object? sender, SaveLoadedEventArgs e)
@@ -221,144 +216,136 @@ namespace Predictor
             }
         }
 
-        private void RegisterModConfig(IGenericModConfigMenuApi menu)
+        private void RegisterModConfig()
         {
-            menu.Register(
+            if (GenericModConfigAPI is null)
+            {
+                return;
+            }
+
+            GenericModConfigAPI.Register(
                 mod: ModManifest,
+                reset: ModAPI.ResetPatchConfigs,
+                save: ModAPI.SavePatchConfigs
+            );
+
+            GenericModConfigAPI.AddSectionTitle(ModManifest, () => Helper.Translation.Get("config.category.core"));
+
+            ModAPI.RegisterPatchConfig(
+                manifest: ModManifest,
+                registerOptions: api =>
+                {
+                    #region General
+                    api.AddSectionTitle(() => Helper.Translation.Get("config.general.title"));
+                    api.AddBoolOption(
+                        getName: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}"),
+                        getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
+                        getValue: () => Config.Enabled,
+                        setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
+                    );
+                    api.AddBoolOption(
+                        getName: () => Helper.Translation.Get("options.LazyUpdates"),
+                        getTooltip: () => Helper.Translation.Get("options.LazyUpdates.desc"),
+                        getValue: () => Config.LazyUpdates,
+                        setValue: value => Config.SetProperty(ref Config.LazyUpdates, value, nameof(Config.LazyUpdates))
+                    );
+                    api.AddKeybind(
+                        getName: () => Helper.Translation.Get("options.ToggleKey"),
+                        getTooltip: () => Helper.Translation.Get("options.ToggleKey.desc"),
+                        getValue: () => Config.ToggleKey,
+                        setValue: value => Config.SetProperty(ref Config.ToggleKey, value, nameof(Config.ToggleKey))
+                    );
+                    api.AddBoolOption(
+                        getName: () => Helper.Translation.Get($"options.{nameof(Config.EnableObjectOutlines)}"),
+                        getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableObjectOutlines)}.desc"),
+                        getValue: () => Config.EnableObjectOutlines,
+                        setValue: value => Config.SetProperty(ref Config.EnableObjectOutlines, value, nameof(Config.EnableObjectOutlines))
+                    );
+                    #endregion
+                    #region Menus
+                    api.AddSectionTitle(() => Helper.Translation.Get("config.menus.title"));
+                    api.AddNumberOption(
+                        getName: () => Helper.Translation.Get($"options.{nameof(Config.MenuOffsetX)}"),
+                        getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuOffsetX)}.desc"),
+                        getValue: () => Config.MenuOffsetX,
+                        setValue: value => Config.SetProperty(ref Config.MenuOffsetX, value, nameof(Config.MenuOffsetX))
+                    );
+                    api.AddNumberOption(
+                        getName: () => Helper.Translation.Get($"options.{nameof(Config.MenuOffsetY)}"),
+                        getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuOffsetY)}.desc"),
+                        getValue: () => Config.MenuOffsetY,
+                        setValue: value => Config.SetProperty(ref Config.MenuOffsetY, value, nameof(Config.MenuOffsetY))
+                    );
+                    api.AddTextOption(
+                        getName: () => Helper.Translation.Get($"options.{nameof(Config.MenuType)}"),
+                        getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuType)}.desc"),
+                        getValue: () => Config.MenuType.ToString(),
+                        setValue: value => Config.SetProperty(ref Config.MenuType, int.Parse(value), nameof(Config.MenuType)),
+                        formatAllowedValue: value => Helper.Translation.Get($"options.{nameof(Config.MenuType)}.items.{value}"),
+                        allowedValues: ModConfig.MenyTypeOptions.Select(value => value.ToString()).ToArray()
+                    );
+                    api.AddNumberOption(
+                        getName: () => Helper.Translation.Get($"options.{nameof(Config.MenuScale)}"),
+                        getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuScale)}.desc"),
+                        getValue: () => Config.MenuScale,
+                        setValue: value => Config.SetProperty(ref Config.MenuScale, value, nameof(Config.MenuScale)),
+                        min: 0.1f,
+                        max: 10f
+                    );
+                    api.AddNumberOption(
+                        getName: () => Helper.Translation.Get($"options.{nameof(Config.MenuBorderWidth)}"),
+                        getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuBorderWidth)}.desc"),
+                        getValue: () => Config.MenuBorderWidth,
+                        setValue: value => Config.SetProperty(ref Config.MenuBorderWidth, value, nameof(Config.MenuBorderWidth)),
+                        min: 0f,
+                        max: 32f
+                    );
+                    api.AddColorOption(
+                        getName: () => Helper.Translation.Get($"options.{nameof(Config.MenuBackgroundColor)}"),
+                        getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuBackgroundColor)}.desc"),
+                        getValue: () => Config.MenuBackgroundColor,
+                        setValue: value => Config.SetProperty(ref Config.MenuBackgroundColor, value, nameof(Config.MenuBackgroundColor))
+                    );
+                    api.AddColorOption(
+                        getName: () => Helper.Translation.Get($"options.{nameof(Config.MenuTextColor)}"),
+                        getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuTextColor)}.desc"),
+                        getValue: () => Config.MenuTextColor,
+                        setValue: value => Config.SetProperty(ref Config.MenuTextColor, value, nameof(Config.MenuTextColor))
+                    );
+                    #endregion
+                    #region Outlines
+                    api.AddSectionTitle(() => Helper.Translation.Get("config.outlines.title")
+                    );
+                    api.AddNumberOption(
+                        getName: () => Helper.Translation.Get($"options.{nameof(Config.OutlineWidth)}"),
+                        getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.OutlineWidth)}.desc"),
+                        getValue: () => Config.OutlineWidth,
+                        setValue: value => Config.SetProperty(ref Config.OutlineWidth, value, nameof(Config.OutlineWidth)),
+                        min: 0f,
+                        max: 32f
+                    );
+                    api.AddNumberOption(
+                        getName: () => Helper.Translation.Get($"options.{nameof(Config.ThickOutlineWidth)}"),
+                        getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ThickOutlineWidth)}.desc"),
+                        getValue: () => Config.ThickOutlineWidth,
+                        setValue: value => Config.SetProperty(ref Config.ThickOutlineWidth, value, nameof(Config.ThickOutlineWidth)),
+                        min: 0f,
+                        max: 32f
+                    );
+                    api.AddColorOption(
+                        getName: () => Helper.Translation.Get($"options.{nameof(Config.OutlineColor)}"),
+                        getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.OutlineColor)}.desc"),
+                        getValue: () => Config.OutlineColor,
+                        setValue: value => Config.SetProperty(ref Config.OutlineColor, value, nameof(Config.OutlineColor))
+                    );
+                    #endregion
+                },
                 reset: () => Config = new ModConfig(),
-                save: () => Helper.WriteConfig(Config)
-            );
+                save: () => Helper.WriteConfig(Config));
 
-            #region General
-            menu.AddSectionTitle(
-                mod: ModManifest,
-                text: () => Helper.Translation.Get("config.general.title")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                fieldId: nameof(Config.Enabled),
-                name: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
-                getValue: () => Config.Enabled,
-                setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                fieldId: nameof(Config.LazyUpdates),
-                name: () => Helper.Translation.Get("options.LazyUpdates"),
-                tooltip: () => Helper.Translation.Get("options.LazyUpdates.desc"),
-                getValue: () => Config.LazyUpdates,
-                setValue: value => Config.SetProperty(ref Config.LazyUpdates, value, nameof(Config.LazyUpdates))
-            );
-            menu.AddKeybind(
-                mod: ModManifest,
-                fieldId: nameof(Config.ToggleKey),
-                name: () => Helper.Translation.Get("options.ToggleKey"),
-                tooltip: () => Helper.Translation.Get("options.ToggleKey.desc"),
-                getValue: () => Config.ToggleKey,
-                setValue: value => Config.SetProperty(ref Config.ToggleKey, value, nameof(Config.ToggleKey))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.EnableObjectOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.EnableObjectOutlines)}.desc"),
-                getValue: () => Config.EnableObjectOutlines,
-                setValue: value => Config.SetProperty(ref Config.EnableObjectOutlines, value, nameof(Config.EnableObjectOutlines))
-            );
-            #endregion
 
-            #region Menus
-            menu.AddSectionTitle(
-                mod: ModManifest,
-                text: () => Helper.Translation.Get("config.menus.title")
-            );
-            menu.AddNumberOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.MenuOffsetX)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuOffsetX)}.desc"),
-                getValue: () => Config.MenuOffsetX,
-                setValue: value => Config.SetProperty(ref Config.MenuOffsetX, value, nameof(Config.MenuOffsetX))
-            );
-            menu.AddNumberOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.MenuOffsetY)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuOffsetY)}.desc"),
-                getValue: () => Config.MenuOffsetY,
-                setValue: value => Config.SetProperty(ref Config.MenuOffsetY, value, nameof(Config.MenuOffsetY))
-            );
-            menu.AddTextOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.MenuType)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuType)}.desc"),
-                getValue: () => Config.MenuType.ToString(),
-                setValue: value => Config.SetProperty(ref Config.MenuType, int.Parse(value), nameof(Config.MenuType)),
-                formatAllowedValue: value => Helper.Translation.Get($"options.{nameof(Config.MenuType)}.items.{value}"),
-                allowedValues: ModConfig.MenyTypeOptions.Select(value => value.ToString()).ToArray()
-            );
-            menu.AddNumberOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.MenuScale)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuScale)}.desc"),
-                getValue: () => Config.MenuScale,
-                setValue: value => Config.SetProperty(ref Config.MenuScale, value, nameof(Config.MenuScale)),
-                min: 0.1f,
-                max: 10f
-            );
-            menu.AddNumberOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.MenuBorderWidth)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuBorderWidth)}.desc"),
-                getValue: () => Config.MenuBorderWidth,
-                setValue: value => Config.SetProperty(ref Config.MenuBorderWidth, value, nameof(Config.MenuBorderWidth)),
-                min: 0f,
-                max: 32f
-            );
-            menu.AddColorOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.MenuBackgroundColor)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuBackgroundColor)}.desc"),
-                getValue: () => Config.MenuBackgroundColor,
-                setValue: value => Config.SetProperty(ref Config.MenuBackgroundColor, value, nameof(Config.MenuBackgroundColor))
-            );
-            menu.AddColorOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.MenuTextColor)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MenuTextColor)}.desc"),
-                getValue: () => Config.MenuTextColor,
-                setValue: value => Config.SetProperty(ref Config.MenuTextColor, value, nameof(Config.MenuTextColor))
-            );
-            #endregion
-            #region Outlines
-            menu.AddSectionTitle(
-                mod: ModManifest,
-                text: () => Helper.Translation.Get("config.outlines.title")
-            );
-            menu.AddNumberOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.OutlineWidth)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.OutlineWidth)}.desc"),
-                getValue: () => Config.OutlineWidth,
-                setValue: value => Config.SetProperty(ref Config.OutlineWidth, value, nameof(Config.OutlineWidth)),
-                min: 0f,
-                max: 32f
-            );
-            menu.AddNumberOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ThickOutlineWidth)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ThickOutlineWidth)}.desc"),
-                getValue: () => Config.ThickOutlineWidth,
-                setValue: value => Config.SetProperty(ref Config.ThickOutlineWidth, value, nameof(Config.ThickOutlineWidth)),
-                min: 0f,
-                max: 32f
-            );
-            menu.AddColorOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.OutlineColor)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.OutlineColor)}.desc"),
-                getValue: () => Config.OutlineColor,
-                setValue: value => Config.SetProperty(ref Config.OutlineColor, value, nameof(Config.OutlineColor))
-            );
-            #endregion
+            GenericModConfigAPI.AddPage(ModManifest, string.Empty);
+            GenericModConfigAPI.AddSectionTitle(ModManifest, () => Helper.Translation.Get("config.category.patches"));
         }
     }
 }

@@ -9,7 +9,7 @@ using PredictorPatchFramework;
 
 namespace PredictorPanningPatch
 {
-    internal static class Extentions
+    internal static class Extensions
     {
         public static void Predict_getPanItems(this Pan pan, PredictionContext _ctx, GameLocation location, Farmer who)
         {

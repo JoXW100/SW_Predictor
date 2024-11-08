@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 
-namespace Predictor.Framework
+namespace Predictor
 {
     internal class ProperyChangedEventArgs : EventArgs
     {

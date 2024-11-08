@@ -1,5 +1,6 @@
 ﻿using DynamicUIFramework;
 using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 
 namespace PredictorPatchFramework
 {
@@ -14,6 +15,7 @@ namespace PredictorPatchFramework
         float ThickOutlineWidth { get; }
 
         IUIDrawable MenuBackground { get; }
+        Point MenuOffset { get; }
         Vector4 MenuPadding { get; }
         Vector2 MenuSpacing { get; }
         Vector2 MenuInnerSpacing { get; }
@@ -44,15 +46,19 @@ namespace PredictorPatchFramework
         void RetatchPatches();
 
         /// <summary>
-        /// Get the offset anchor point to start drawing the menu from.
-        /// </summary>
-        /// <returns>The offset point.</returns>
-        Point GetMenuOffset();
-
-        /// <summary>
         /// Gets the localized unit of distance, commonly "Tiles"
         /// </summary>
         /// <returns>The localized unit of distance.</returns>
         string GetDistanceUnit();
+
+        /// <summary>
+        /// Registers a config menu as a sub-page in the generic config menu of the main Predicor mod for a patch.
+        /// </summary>
+        /// <param name="manifest">The manifest of the patch to register.</param>
+        /// <param name="registerOptions">Callback method to register individual options inside the config page.</param>
+        /// <param name="reset">The reset action, called when settings are cleared.</param>
+        /// <param name="save">The save option action, called when settings are saved.</param>
+        /// <exception cref="InvalidOperationException">Thrown when registering a config for a patch that already is registered.</exception>
+        void RegisterPatchConfig(IManifest manifest, Action<IPatchConfigApi> registerOptions, Action reset, Action save);
     }
 }

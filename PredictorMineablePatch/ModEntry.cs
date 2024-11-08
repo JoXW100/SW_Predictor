@@ -1,5 +1,5 @@
 ﻿using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 
@@ -60,81 +60,57 @@ namespace PredictorMineablePatch
                 FrameworkUtils.API.RegisterPatch(Patch);
             }
 
-            var menu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (menu is null)
+            FrameworkUtils.API.RegisterPatchConfig(
+            manifest: ModManifest,
+            reset: () => Config = new ModConfig(),
+            save: () => Helper.WriteConfig(Config),
+            registerOptions: api =>
             {
-                return;
-            }
-
-            menu.Register(
-                mod: ModManifest,
-                reset: () => Config = new ModConfig(),
-                save: () => Helper.WriteConfig(Config)
-            );
-            menu.AddSectionTitle(
-                mod: ModManifest, 
-                text: () => Helper.Translation.Get("config.general.title")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
-                getValue: () => Config.Enabled,
-                setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.RequireTool)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.RequireTool)}.desc"),
-                getValue: () => Config.RequireTool,
-                setValue: value => Config.SetProperty(ref Config.RequireTool, value, nameof(Config.RequireTool))
-            );
-            menu.AddSectionTitle(
-                mod: ModManifest,
-                text: () => Helper.Translation.Get("config.features.title")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}.desc"),
-                getValue: () => Config.ShowItems,
-                setValue: value => Config.SetProperty(ref Config.ShowItems, value, nameof(Config.ShowItems))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}.desc"),
-                getValue: () => Config.ShowOutlines,
-                setValue: value => Config.SetProperty(ref Config.ShowOutlines, value, nameof(Config.ShowOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowLadders)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowLadders)}.desc"),
-                getValue: () => Config.ShowLadders,
-                setValue: value => Config.SetProperty(ref Config.ShowLadders, value, nameof(Config.ShowLadders))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.MonstersHideLadders)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.MonstersHideLadders)}.desc"),
-                getValue: () => Config.MonstersHideLadders,
-                setValue: value => Config.SetProperty(ref Config.MonstersHideLadders, value, nameof(Config.MonstersHideLadders))
-            );
-            menu.AddColorOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.LadderColor)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.LadderColor)}.desc"),
-                getValue: () => Config.LadderColor,
-                setValue: value => Config.SetProperty(ref Config.LadderColor, value, nameof(Config.LadderColor))
-            );
-            menu.AddColorOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShaftColor)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShaftColor)}.desc"),
-                getValue: () => Config.ShaftColor,
-                setValue: value => Config.SetProperty(ref Config.ShaftColor, value, nameof(Config.ShaftColor))
-            );
+                api.AddSectionTitle(() => Helper.Translation.Get("config.general.title"));
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
+                    getValue: () => Config.Enabled,
+                    setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
+                );
+                api.AddSectionTitle(() => Helper.Translation.Get("config.features.title"));
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}.desc"),
+                    getValue: () => Config.ShowOutlines,
+                    setValue: value => Config.SetProperty(ref Config.ShowOutlines, value, nameof(Config.ShowOutlines))
+                );
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}.desc"),
+                    getValue: () => Config.ShowItems,
+                    setValue: value => Config.SetProperty(ref Config.ShowItems, value, nameof(Config.ShowItems))
+                );
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShowLadders)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowLadders)}.desc"),
+                    getValue: () => Config.ShowLadders,
+                    setValue: value => Config.SetProperty(ref Config.ShowLadders, value, nameof(Config.ShowLadders))
+                );
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.MonstersHideLadders)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.MonstersHideLadders)}.desc"),
+                    getValue: () => Config.MonstersHideLadders,
+                    setValue: value => Config.SetProperty(ref Config.MonstersHideLadders, value, nameof(Config.MonstersHideLadders))
+                );
+                api.AddColorOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.LadderColor)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.LadderColor)}.desc"),
+                    getValue: () => Config.LadderColor,
+                    setValue: value => Config.SetProperty(ref Config.LadderColor, value, nameof(Config.LadderColor))
+                );
+                api.AddColorOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShaftColor)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShaftColor)}.desc"),
+                    getValue: () => Config.ShaftColor,
+                    setValue: value => Config.SetProperty(ref Config.ShaftColor, value, nameof(Config.ShaftColor))
+                );
+            });
         }
     }
 }

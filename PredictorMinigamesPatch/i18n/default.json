@@ -1,5 +1,6 @@
 {
   "config.general.title": "General",
+  "config.features.title": "Features",
 
   "menu.SlotsWinMultiplierLabel": "Win Multiplier: {0}x",
   "menu.CalicoNextHitPlayerCardLabel": "Next 'Hit' Player card: {0}",

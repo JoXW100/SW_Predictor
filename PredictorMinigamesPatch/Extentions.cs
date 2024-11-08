@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace PredictorMinigamesPatch
 {
-    public static class Extentions
+    public static class Extensions
     {
         public static float Predict_slotResults(this Slots slots, PredictionContext _ctx)
         {

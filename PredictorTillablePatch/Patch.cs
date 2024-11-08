@@ -6,7 +6,7 @@ using StardewValley;
 using StardewValley.Tools;
 using StardewValley.TerrainFeatures;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 
 namespace PredictorTillablePatch
 {
@@ -38,12 +38,6 @@ namespace PredictorTillablePatch
             Helper.Events.GameLoop.OneSecondUpdateTicked -= OnUpdateTicked;
             Helper.Events.World.TerrainFeatureListChanged -= OnUpdateTicked;
             Helper.Events.Display.RenderedWorld -= OnRendered;
-        }
-
-        public override bool CheckRequirements()
-        {
-            return base.CheckRequirements()
-                && (ModEntry.Instance.Config.ShowItems || ModEntry.Instance.Config.ShowOutlines);
         }
 
         private void OnRendered(object? sender, RenderedWorldEventArgs e)

@@ -1,12 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using StardewValley;
 using StardewValley.TerrainFeatures;
 
 namespace PredictorBushPatch
 {
-    internal static class Extentions
+    internal static class Extensions
     {
         public static bool IsHarvestable(this Bush bush)
         {
@@ -26,10 +26,10 @@ namespace PredictorBushPatch
                 switch (bush.size.Value)
                 {
                     case 4:
-                        CreateItemExtentions.Predict_createItemDebris(_ctx, PredictionItem.Create(shakeOff), new Vector2(bush.getBoundingBox().Center.X, bush.getBoundingBox().Bottom - 2), 0, bush. Location, bush.getBoundingBox().Bottom);
+                        CreateItemExtensions.Predict_createItemDebris(_ctx, PredictionItem.Create(shakeOff), new Vector2(bush.getBoundingBox().Center.X, bush.getBoundingBox().Bottom - 2), 0, bush. Location, bush.getBoundingBox().Bottom);
                         break;
                     case 3:
-                        CreateItemExtentions.Predict_createObjectDebris(_ctx, shakeOff, (int)tileLocation.X, (int)tileLocation.Y);
+                        CreateItemExtensions.Predict_createObjectDebris(_ctx, shakeOff, (int)tileLocation.X, (int)tileLocation.Y);
                         break;
                     default:
                         {
@@ -42,7 +42,7 @@ namespace PredictorBushPatch
                                     item.Quality = 4;
                                 }
 
-                                CreateItemExtentions.Predict_createItemDebris(_ctx, item, Utility.PointToVector2(bush.getBoundingBox().Center), Game1.random.Next(1, 4));
+                                CreateItemExtensions.Predict_createItemDebris(_ctx, item, Utility.PointToVector2(bush.getBoundingBox().Center), _ctx.Random.Next(1, 4));
                             }
                             break;
                         }

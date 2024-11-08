@@ -1,11 +1,11 @@
 {
   "Name": "Predictor Crab Pot Patch",
   "Author": "JoXW",
-  "Version": "1.0.0",
+  "Version": "1.1.0",
   "Description": "Predicts item drops from Crab Pots.",
   "UniqueID": "JoXW.PredictorCrabPotPatch",
   "EntryDll": "PredictorCrabPotPatch.dll",
-  "MinimumApiVersion": "4.0.0",
+  "MinimumApiVersion": "4.1.0",
   "UpdateKeys": [ "Nexus:21332@CrabPotPatch" ],
   "Dependencies": [
     {

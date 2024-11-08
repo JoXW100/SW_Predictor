@@ -7,6 +7,13 @@ namespace Predictor
 {
     public class ModAPI : IModAPI
     {
+        private static Dictionary<string, PatchConfigApi> RegisteredModConfigs { get; } = new Dictionary<string, PatchConfigApi>();
+
+        private IManifest Manifest => ModEntry.Instance.ModManifest;
+        private IGenericModConfigMenuApi? GenericModConfigAPI => ModEntry.Instance.GenericModConfigAPI;
+
+        internal ModAPI() { }
+
         public bool IsEnabled => ModEntry.Instance.Config.Enabled;
         public bool IsLazy => ModEntry.Instance.Config.LazyUpdates;
         // Styling
@@ -16,6 +23,7 @@ namespace Predictor
         public float ThickOutlineWidth => ModEntry.Instance.Config.ThickOutlineWidth;
 
         public IUIDrawable MenuBackground => Utils.MenuBackground;
+        public Point MenuOffset => ModEntry.Instance.Config.GetMenuOffset();
         public Vector4 MenuPadding => Utils.MenuPadding;
         public Vector2 MenuSpacing => Utils.MenuSpacing;
         public Vector2 MenuInnerSpacing => Utils.MenuInnerSpacing;
@@ -28,11 +36,6 @@ namespace Predictor
         {
             get => ModEntry.Instance.Tooltips;
             set => ModEntry.Instance.Tooltips = value;
-        }
-
-        public Point GetMenuOffset()
-        {
-            return ModEntry.Instance.Config.GetMenuOffset();
         }
 
         public string GetDistanceUnit()
@@ -56,6 +59,39 @@ namespace Predictor
         {
             ModEntry.Instance.Monitor.Log("Retatching Patches");
             ModEntry.Instance.RetatchPatches();
+        }
+
+        public void SavePatchConfigs()
+        {
+            foreach (var config in RegisteredModConfigs.Values)
+            {
+                config.Save.Invoke();
+            }
+        }
+
+        public void ResetPatchConfigs()
+        {
+            foreach (var config in RegisteredModConfigs.Values)
+            {
+                config.Reset.Invoke();
+            }
+        }
+
+        public void RegisterPatchConfig(IManifest manifest, Action<IPatchConfigApi> registerOptions, Action reset, Action save)
+        {
+            if (GenericModConfigAPI is null)
+            {
+                return;
+            }
+
+            if (RegisteredModConfigs.ContainsKey(manifest.UniqueID))
+            {
+                throw new InvalidOperationException($"Mod configuration for ID={manifest.UniqueID}, already registered.");
+            }
+
+            var api = PatchConfigApi.Register(GenericModConfigAPI, Manifest, manifest.UniqueID, manifest.Name, reset, save);
+            RegisteredModConfigs[manifest.UniqueID] = api;
+            registerOptions.Invoke(api);
         }
     }
 }

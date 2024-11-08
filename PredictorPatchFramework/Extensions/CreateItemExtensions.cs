@@ -3,11 +3,11 @@ using StardewValley;
 using StardewValley.Constants;
 using StardewValley.GameData;
 using StardewValley.Monsters;
-using StardewValley.Objects;
+using StardewValley.Objects.Trinkets;
 
-namespace PredictorPatchFramework.Extentions
+namespace PredictorPatchFramework.Extensions
 {
-    public static class CreateItemExtentions
+    public static class CreateItemExtensions
     {
         public static void Predict_createMultipleItemDebris(PredictionContext _ctx, PredictionItem? item, Vector2 pixelOrigin, int direction, GameLocation? location = null, int groundLevel = -1, bool flopFish = false)
         {
@@ -140,7 +140,7 @@ namespace PredictorPatchFramework.Extentions
                 {
                     if (num == num2 && value.DropsNaturally)
                     {
-                        trinket = PredictionItem.Create("(TR)" + value.ID);
+                        trinket = PredictionItem.Create("(TR)" + value.Id);
                         break;
                     }
 
@@ -158,13 +158,13 @@ namespace PredictorPatchFramework.Extentions
                 random = _ctx.Random;
             }
 
-            double num = 1.0;
+            double luckMod = 1.0;
             if (who != null)
             {
-                num = 1.0 + who.team.AverageDailyLuck() * dailyLuckWeight;
+                luckMod = 1.0 + who.team.AverageDailyLuck() * dailyLuckWeight;
             }
 
-            if (who != null && who.stats.Get(StatKeys.Mastery(0)) != 0 && random.NextDouble() < 0.001 * chanceModifier * num)
+            if (who != null && who.stats.Get(StatKeys.Mastery(0)) != 0 && random.NextDouble() < 0.001 * chanceModifier * luckMod)
             {
                 Predict_createItemDebris(_ctx, PredictionItem.Create("(O)GoldenAnimalCracker"), position, -1, location, groundLevel);
             }

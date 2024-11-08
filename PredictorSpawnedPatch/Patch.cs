@@ -1,6 +1,6 @@
-﻿using PredictorCropPatch.Extentions;
+﻿using PredictorCropPatch.Extensions;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;

@@ -3,11 +3,11 @@ using StardewValley.Characters;
 using StardewValley;
 using Microsoft.Xna.Framework;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 
 namespace PredictorGarbageCanPatch
 {
-    internal static class Extentions
+    internal static class Extensions
     {
         public static bool Predict_CheckGarbage(this GameLocation location, PredictionContext _ctx, string id, Vector2 tile, Farmer who, bool reactNpcs = true)
         {
@@ -67,11 +67,11 @@ namespace PredictorGarbageCanPatch
                     var pixelOrigin = new Vector2(tile.X + 0.5f, tile.Y - 1f) * 64f;
                     if (selected.CreateMultipleDebris)
                     {
-                        CreateItemExtentions.Predict_createMultipleItemDebris(_ctx, item, pixelOrigin, 2, location, (int)pixelOrigin.Y + 64);
+                        CreateItemExtensions.Predict_createMultipleItemDebris(_ctx, item, pixelOrigin, 2, location, (int)pixelOrigin.Y + 64);
                     }
                     else
                     {
-                        CreateItemExtentions.Predict_createItemDebris(_ctx, item, pixelOrigin, 2, location, (int)pixelOrigin.Y + 64);
+                        CreateItemExtensions.Predict_createItemDebris(_ctx, item, pixelOrigin, 2, location, (int)pixelOrigin.Y + 64);
                     }
                 }
             }

@@ -7,7 +7,7 @@ using PredictorPatchFramework;
 
 namespace PredictorGeodePatch
 {
-    internal static class Extentions
+    internal static class Extensions
     {
         public static PredictionItem? Predict_getTreasureFromGeode(Item geode)
         {

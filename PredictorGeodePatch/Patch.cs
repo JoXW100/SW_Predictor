@@ -61,7 +61,7 @@ namespace PredictorGeodePatch
             }
             else
             {
-                treasure = Extentions.Predict_getTreasureFromGeode(__instance);
+                treasure = Extensions.Predict_getTreasureFromGeode(__instance);
             }
 
             if (treasure is not null)

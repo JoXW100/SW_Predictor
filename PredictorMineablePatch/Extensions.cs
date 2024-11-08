@@ -5,12 +5,12 @@ using StardewValley;
 using StardewModdingAPI;
 using Microsoft.Xna.Framework;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using Force.DeepCloner;
 
 namespace PredictorMineablePatch
 {
-    internal static class Extentions
+    internal static class Extensions
     {
         public static IMonitor ModLog => ModEntry.Instance.Monitor;
 
@@ -31,14 +31,14 @@ namespace PredictorMineablePatch
 
                     if (_ctx.Random.NextBool(num2))
                     {
-                        CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "CalicoEgg", x, y, _ctx.Random.Next(1, 4), who.UniqueMultiplayerID, location);
+                        CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "CalicoEgg", x, y, _ctx.Random.Next(1, 4), who.UniqueMultiplayerID, location);
                     }
                 }
             }
 
             if (who != null && _ctx.Random.NextDouble() <= 0.02 && Game1.player.team.SpecialOrderRuleActive("DROP_QI_BEANS"))
             {
-                CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)890", x, y, 1, who.UniqueMultiplayerID, location);
+                CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)890", x, y, 1, who.UniqueMultiplayerID, location);
             }
 
             if (!MineShaft.IsGeneratedLevel(location, out var _))
@@ -49,19 +49,19 @@ namespace PredictorMineablePatch
                     double num3 = who != null && who.hasBuff("dwarfStatue_4") ? 1.25 : 0.0;
                     if (random.NextDouble() < 0.035 * num3 && Game1.stats.DaysPlayed > 1)
                     {
-                        CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)" + (535 + (Game1.stats.DaysPlayed > 60 && random.NextDouble() < 0.2 ? 1 : Game1.stats.DaysPlayed > 120 && random.NextDouble() < 0.2 ? 2 : 0)), x, y, whichPlayer, location);
+                        CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)" + (535 + (Game1.stats.DaysPlayed > 60 && random.NextDouble() < 0.2 ? 1 : Game1.stats.DaysPlayed > 120 && random.NextDouble() < 0.2 ? 2 : 0)), x, y, whichPlayer, location);
                     }
 
                     int num4 = who == null || !who.professions.Contains(21) ? 1 : 2;
                     double num5 = who != null && who.hasBuff("dwarfStatue_2") ? 0.03 : 0.0;
                     if (random.NextDouble() < 0.035 * num4 + num5 && Game1.stats.DaysPlayed > 1)
                     {
-                        CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)382", x, y, whichPlayer, location);
+                        CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)382", x, y, whichPlayer, location);
                     }
 
                     if (random.NextDouble() < 0.01 && Game1.stats.DaysPlayed > 1)
                     {
-                        CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)390", x, y, whichPlayer, location);
+                        CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)390", x, y, whichPlayer, location);
                     }
                 }
 
@@ -100,15 +100,15 @@ namespace PredictorMineablePatch
             switch (stoneId)
             {
                 case "95":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)909", x, y, num2 + r.Next(1, 3) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 200f) ? 1 : 0), num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)909", x, y, num2 + r.Next(1, 3) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 200f) ? 1 : 0), num3, location);
                     num = 18;
                     break;
                 case "843":
                 case "844":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)848", x, y, num2 + r.Next(1, 3) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 200f) ? 1 : 0), num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)848", x, y, num2 + r.Next(1, 3) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 200f) ? 1 : 0), num3, location);
                     break;
                 case "25":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)719", x, y, r.Next(2, 5), num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)719", x, y, r.Next(2, 5), num3, location);
                     num = 5;
                     if (location is IslandLocation && r.NextDouble() < 0.1)
                     {
@@ -117,68 +117,68 @@ namespace PredictorMineablePatch
 
                     break;
                 case "75":
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)535", x, y, num3, location);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)535", x, y, num3, location);
                     num = 8;
                     break;
                 case "76":
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)536", x, y, num3, location);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)536", x, y, num3, location);
                     num = 16;
                     break;
                 case "77":
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)537", x, y, num3, location);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)537", x, y, num3, location);
                     num = 32;
                     break;
                 case "816":
                 case "817":
                     if (r.NextDouble() < 0.1)
                     {
-                        CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)823", x, y, num3, location);
+                        CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)823", x, y, num3, location);
                     }
                     else if (r.NextDouble() < 0.015)
                     {
-                        CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)824", x, y, num3, location);
+                        CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)824", x, y, num3, location);
                     }
                     else if (r.NextDouble() < 0.1)
                     {
-                        CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)" + (579 + r.Next(11)), x, y, num3, location);
+                        CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)" + (579 + r.Next(11)), x, y, num3, location);
                     }
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)881", x, y, num2 + r.Next(1, 3) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)881", x, y, num2 + r.Next(1, 3) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
                     num = 6;
                     break;
                 case "818":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)330", x, y, num2 + r.Next(1, 3) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)330", x, y, num2 + r.Next(1, 3) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
                     num = 6;
                     break;
                 case "819":
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)749", x, y, num3, location);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)749", x, y, num3, location);
                     num = 64;
                     break;
                 case "8":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)66", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)66", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
                     num = 16;
                     break;
                 case "10":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)68", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)68", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
                     num = 16;
                     break;
                 case "12":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)60", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)60", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
                     num = 80;
                     break;
                 case "14":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)62", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)62", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
                     num = 40;
                     break;
                 case "6":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)70", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)70", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
                     num = 40;
                     break;
                 case "4":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)64", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)64", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
                     num = 80;
                     break;
                 case "2":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)72", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)72", x, y, who == null || who.stats.Get(StatKeys.Mastery(3)) == 0 ? 1 : 2, num3, location);
                     num = 150;
                     break;
                 case "845":
@@ -186,24 +186,24 @@ namespace PredictorMineablePatch
                 case "847":
                 case "670":
                 case "668":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)390", x, y, num2 + r.Next(1, 3) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)390", x, y, num2 + r.Next(1, 3) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
                     num = 3;
                     if (r.NextDouble() < 0.08)
                     {
-                        CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)382", x, y, 1 + num2, num3, location);
+                        CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)382", x, y, 1 + num2, num3, location);
                         num = 4;
                     }
 
                     break;
                 case "849":
                 case "751":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)378", x, y, num2 + r.Next(1, 4) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)378", x, y, num2 + r.Next(1, 4) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
                     num = 5;
                     // Game1.multiplayer.broadcastSprites(this, Utility.sparkleWithinArea(new Microsoft.Xna.Framework.Rectangle(x * 64, (y - 1) * 64, 32, 96), 3, Color.Orange * 0.5f, 175, 100));
                     break;
                 case "850":
                 case "290":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)380", x, y, num2 + r.Next(1, 4) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)380", x, y, num2 + r.Next(1, 4) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
                     num = 12;
                     // Game1.multiplayer.broadcastSprites(this, Utility.sparkleWithinArea(new Microsoft.Xna.Framework.Rectangle(x * 64, (y - 1) * 64, 32, 96), 3, Color.White * 0.5f, 175, 100));
                     break;
@@ -211,23 +211,23 @@ namespace PredictorMineablePatch
                 case "BasicCoalNode1":
                 case "VolcanoCoalNode0":
                 case "VolcanoCoalNode1":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)382", x, y, num2 + r.Next(1, 4) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)382", x, y, num2 + r.Next(1, 4) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
                     num = 10;
                     // Game1.multiplayer.broadcastSprites(this, Utility.sparkleWithinArea(new Microsoft.Xna.Framework.Rectangle(x * 64, (y - 1) * 64, 32, 96), 3, Color.Black * 0.5f, 175, 100));
                     break;
                 case "VolcanoGoldNode":
                 case "764":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)384", x, y, num2 + r.Next(1, 4) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)384", x, y, num2 + r.Next(1, 4) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
                     num = 18;
                     // Game1.multiplayer.broadcastSprites(this, Utility.sparkleWithinArea(new Microsoft.Xna.Framework.Rectangle(x * 64, (y - 1) * 64, 32, 96), 3, Color.Yellow * 0.5f, 175, 100));
                     break;
                 case "765":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)386", x, y, num2 + r.Next(1, 4) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)386", x, y, num2 + r.Next(1, 4) + (r.NextDouble() < (double)(num4 / 100f) ? 1 : 0) + (r.NextDouble() < (double)(num6 / 100f) ? 1 : 0), num3, location);
 
                     // Game1.multiplayer.broadcastSprites(this, Utility.sparkleWithinArea(new Microsoft.Xna.Framework.Rectangle(x * 64, (y - 1) * 64, 32, 96), 6, Color.BlueViolet * 0.5f, 175, 100));
                     if (r.NextDouble() < 0.035)
                     {
-                        CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)74", x, y, 1, num3, location);
+                        CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)74", x, y, 1, num3, location);
                     }
 
                     num = 50;
@@ -235,7 +235,7 @@ namespace PredictorMineablePatch
                 case "CalicoEggStone_0":
                 case "CalicoEggStone_1":
                 case "CalicoEggStone_2":
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "CalicoEgg", x, y, r.Next(1, 4) + (r.NextBool(num4 / 100f) ? 1 : 0) + (r.NextBool(num6 / 100f) ? 1 : 0), num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "CalicoEgg", x, y, r.Next(1, 4) + (r.NextBool(num4 / 100f) ? 1 : 0) + (r.NextBool(num6 / 100f) ? 1 : 0), num3, location);
                     num = 50;
                     // Game1.multiplayer.broadcastSprites(this, Utility.sparkleWithinArea(new Microsoft.Xna.Framework.Rectangle(x * 64, (y - 1) * 64, 32, 96), 6, new Color(255, 120, 0) * 0.5f, 175, 100));
                     break;
@@ -247,31 +247,31 @@ namespace PredictorMineablePatch
                 switch (stoneId)
                 {
                     case "8":
-                        CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)66", x, y, number, who.UniqueMultiplayerID, location);
+                        CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)66", x, y, number, who.UniqueMultiplayerID, location);
                         num = 8;
                         break;
                     case "10":
-                        CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)68", x, y, number, who.UniqueMultiplayerID, location);
+                        CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)68", x, y, number, who.UniqueMultiplayerID, location);
                         num = 8;
                         break;
                     case "12":
-                        CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)60", x, y, number, who.UniqueMultiplayerID, location);
+                        CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)60", x, y, number, who.UniqueMultiplayerID, location);
                         num = 50;
                         break;
                     case "14":
-                        CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)62", x, y, number, who.UniqueMultiplayerID, location);
+                        CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)62", x, y, number, who.UniqueMultiplayerID, location);
                         num = 20;
                         break;
                     case "6":
-                        CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)70", x, y, number, who.UniqueMultiplayerID, location);
+                        CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)70", x, y, number, who.UniqueMultiplayerID, location);
                         num = 20;
                         break;
                     case "4":
-                        CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)64", x, y, number, who.UniqueMultiplayerID, location);
+                        CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)64", x, y, number, who.UniqueMultiplayerID, location);
                         num = 50;
                         break;
                     case "2":
-                        CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)72", x, y, number, who.UniqueMultiplayerID, location);
+                        CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)72", x, y, number, who.UniqueMultiplayerID, location);
                         num = 100;
                         break;
                 }
@@ -279,12 +279,12 @@ namespace PredictorMineablePatch
 
             if (stoneId == "46")
             {
-                CreateItemExtentions.Predict_createDebris(_ctx, 10, x, y, r.Next(1, 4), location);
-                CreateItemExtentions.Predict_createDebris(_ctx, 6, x, y, r.Next(1, 5), location);
+                CreateItemExtensions.Predict_createDebris(_ctx, 10, x, y, r.Next(1, 4), location);
+                CreateItemExtensions.Predict_createDebris(_ctx, 6, x, y, r.Next(1, 5), location);
 
                 if (r.NextDouble() < 0.25)
                 {
-                    CreateItemExtentions.Predict_createMultipleObjectDebris(_ctx, "(O)74", x, y, 1, num3, location);
+                    CreateItemExtensions.Predict_createMultipleObjectDebris(_ctx, "(O)74", x, y, 1, num3, location);
                 }
 
                 num = 150;
@@ -295,7 +295,7 @@ namespace PredictorMineablePatch
             {
                 double num7 = num5 / 2.0 + num6 * 0.005 + num4 * 0.001;
                 Random random = Utility.CreateDaySaveRandom(x * 1000, y);
-                CreateItemExtentions.Predict_createDebris(_ctx, 14, x, y, 1, location);
+                CreateItemExtensions.Predict_createDebris(_ctx, 14, x, y, 1, location);
 
                 if (who != null)
                 {
@@ -313,13 +313,13 @@ namespace PredictorMineablePatch
 
                     if (random.NextDouble() < num8)
                     {
-                        CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)382", x, y, who.UniqueMultiplayerID, location);
+                        CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)382", x, y, who.UniqueMultiplayerID, location);
                     }
                 }
 
                 if (random.NextDouble() < 0.05 * (1.0 + num7))
                 {
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)382", x, y, num3, location);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)382", x, y, num3, location);
                     // Game1.multiplayer.broadcastSprites(this, new TemporaryAnimatedSprite(25, new Vector2(64 * x, 64 * y), Color.White, 8, Game1.random.NextBool(), 80f, 0, -1, -1f, 128));
                     // who?.gainExperience(3, 5);
                 }
@@ -330,7 +330,7 @@ namespace PredictorMineablePatch
                 PredictionItem? @object = location.Predict_tryToCreateUnseenSecretNote(_ctx, who);
                 if (@object != null)
                 {
-                    CreateItemExtentions.Predict_createItemDebris(_ctx, @object, new Vector2(x + 0.5f, y + 0.75f) * 64f, Game1.player.FacingDirection, location);
+                    CreateItemExtensions.Predict_createItemDebris(_ctx, @object, new Vector2(x + 0.5f, y + 0.75f) * 64f, Game1.player.FacingDirection, location);
                 }
             }
 
@@ -428,7 +428,7 @@ namespace PredictorMineablePatch
                     }
                 }
 
-                CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)" + num7, x, y, whichPlayer, location);
+                CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)" + num7, x, y, whichPlayer, location);
                 // Game1.stats.OtherPreciousGemsFound++;
                 return;
             }
@@ -445,10 +445,10 @@ namespace PredictorMineablePatch
 
                 if (who != null && who.professions.Contains(19) && random.NextBool())
                 {
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, id, x, y, whichPlayer, location);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, id, x, y, whichPlayer, location);
                 }
 
-                CreateItemExtentions.Predict_createObjectDebris(_ctx, id, x, y, whichPlayer, location);
+                CreateItemExtensions.Predict_createObjectDebris(_ctx, id, x, y, whichPlayer, location);
                 // who?.gainExperience(5, 20 * location.getMineArea());
             }
 
@@ -456,10 +456,10 @@ namespace PredictorMineablePatch
             {
                 if (who != null && who.professions.Contains(19) && random.NextBool())
                 {
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)749", x, y, whichPlayer, location);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)749", x, y, whichPlayer, location);
                 }
 
-                CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)749", x, y, whichPlayer, location);
+                CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)749", x, y, whichPlayer, location);
                 // who?.gainExperience(5, 40 * location.getMineArea());
             }
 
@@ -469,17 +469,17 @@ namespace PredictorMineablePatch
                 double num11 = who != null && who.hasBuff("dwarfStatue_2") ? 0.1 : 0.0;
                 if (random.NextDouble() < 0.25 * num10 + num11)
                 {
-                    CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)382", x, y, whichPlayer, location);
+                    CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)382", x, y, whichPlayer, location);
                     _ctx.Random.NextBool();
                     // Game1.multiplayer.broadcastSprites(location, new TemporaryAnimatedSprite(25, new Vector2(64 * x, 64 * y), Color.White, 8, _ctx.Random.NextBool(), 80f, 0, -1, -1f, 128));
                 }
 
-                CreateItemExtentions.Predict_createObjectDebris(_ctx, location.getOreIdForLevel(location.mineLevel, random), x, y, whichPlayer, location);
+                CreateItemExtensions.Predict_createObjectDebris(_ctx, location.getOreIdForLevel(location.mineLevel, random), x, y, whichPlayer, location);
                 // who?.gainExperience(3, 5);
             }
             else if (random.NextBool())
             {
-                CreateItemExtentions.Predict_createDebris(_ctx, 14, x, y, 1, location);
+                CreateItemExtensions.Predict_createDebris(_ctx, 14, x, y, 1, location);
             }
         }
 

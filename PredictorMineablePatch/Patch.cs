@@ -6,7 +6,7 @@ using StardewValley;
 using StardewValley.Tools;
 using StardewValley.Monsters;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using DynamicUIFramework;
 
 namespace PredictorMineablePatch

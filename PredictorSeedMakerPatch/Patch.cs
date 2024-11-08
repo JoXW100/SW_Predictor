@@ -2,7 +2,7 @@
 using StardewModdingAPI.Events;
 using StardewValley;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using Object = StardewValley.Object;
 
 namespace PredictorSeedMakerPatch
@@ -65,7 +65,7 @@ namespace PredictorSeedMakerPatch
                 }
 
                 var context = new PredictionContext();
-                var item = Object.OutputSeedMaker(obj, Game1.player.CurrentItem, true, null, out var min);
+                var item = Object.OutputSeedMaker(obj, Game1.player.CurrentItem, true, null, Game1.player, out var overrideMinutesUntilReady);
                 context.AddItemIfNotNull(item);
                 Context.Add(pos, context);
             }

@@ -2,7 +2,7 @@
 using StardewModdingAPI.Events;
 using StardewValley;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using StardewValley.Tools;
 
 namespace PredictorDigSpotPatch
@@ -76,7 +76,7 @@ namespace PredictorDigSpotPatch
                 // Dig spots
                 PredictionContext ctx = new();
                 Game1.player.currentLocation.Predict_digUpSpot(ctx, obj, pos, Game1.player);
-                if (ctx.Items.Any())
+                if (ctx.Items.Count > 0)
                 {
                     if (Context.TryGetValue(pos, out var current))
                     {

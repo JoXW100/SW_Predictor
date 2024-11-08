@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DynamicUIFramework\DynamicUIFramework.csproj" Private="false"/>
-    <ProjectReference Include="..\PredictorPatchFramework\PredictorPatchFramework.csproj" Private="false"/>
+    <ProjectReference Include="..\DynamicUIFramework\DynamicUIFramework.csproj" Private="false" />
+    <ProjectReference Include="..\PredictorPatchFramework\PredictorPatchFramework.csproj" Private="false" />
   </ItemGroup>
 </Project>

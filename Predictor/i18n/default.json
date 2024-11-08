@@ -1,6 +1,9 @@
 ﻿{
   "menu.DistanceUnit": "Tiles",
 
+  "config.category.core": "Core",
+  "config.category.patches": "Patches",
+
   "config.general.title": "General",
   "config.menus.title": "Menus",
   "config.outlines.title": "Outlines",

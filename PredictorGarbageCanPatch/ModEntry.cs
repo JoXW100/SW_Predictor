@@ -1,5 +1,4 @@
 ﻿using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 
@@ -60,67 +59,45 @@ namespace PredictorGarbageCanPatch
                 FrameworkUtils.API.RegisterPatch(Patch);
             }
 
-            var menu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (menu is null)
+            FrameworkUtils.API.RegisterPatchConfig(
+            manifest: ModManifest,
+            reset: () => Config = new ModConfig(),
+            save: () => Helper.WriteConfig(Config),
+            registerOptions: api =>
             {
-                return;
-            }
-
-            menu.Register(
-                mod: ModManifest,
-                reset: () => Config = new ModConfig(),
-                save: () => Helper.WriteConfig(Config)
-            );
-            menu.AddSectionTitle(
-                mod: ModManifest, 
-                text: () => Helper.Translation.Get("config.general.title")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
-                getValue: () => Config.Enabled,
-                setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
-            );
-            menu.AddSectionTitle(
-                mod: ModManifest,
-                text: () => Helper.Translation.Get("config.features.title")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}.desc"),
-                getValue: () => Config.ShowItems,
-                setValue: value => Config.SetProperty(ref Config.ShowItems, value, nameof(Config.ShowItems))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}.desc"),
-                getValue: () => Config.ShowOutlines,
-                setValue: value => Config.SetProperty(ref Config.ShowOutlines, value, nameof(Config.ShowOutlines))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowNearbyNPCWarning)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowNearbyNPCWarning)}.desc"),
-                getValue: () => Config.ShowNearbyNPCWarning,
-                setValue: value => Config.SetProperty(ref Config.ShowNearbyNPCWarning, value, nameof(Config.ShowNearbyNPCWarning))
-            );
-            menu.AddColorOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.GarbageCanOkColor)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.GarbageCanOkColor)}.desc"),
-                getValue: () => Config.GarbageCanOkColor,
-                setValue: value => Config.SetProperty(ref Config.GarbageCanOkColor, value, nameof(Config.GarbageCanOkColor))
-            );
-            menu.AddColorOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.GarbageCanWarnColor)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.GarbageCanWarnColor)}.desc"),
-                getValue: () => Config.GarbageCanWarnColor,
-                setValue: value => Config.SetProperty(ref Config.GarbageCanWarnColor, value, nameof(Config.GarbageCanWarnColor))
-            );
+                api.AddSectionTitle(() => Helper.Translation.Get("config.general.title"));
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
+                    getValue: () => Config.Enabled,
+                    setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
+                );
+                api.AddSectionTitle(() => Helper.Translation.Get("config.features.title"));
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}.desc"),
+                    getValue: () => Config.ShowOutlines,
+                    setValue: value => Config.SetProperty(ref Config.ShowOutlines, value, nameof(Config.ShowOutlines))
+                );
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShowNearbyNPCWarning)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowNearbyNPCWarning)}.desc"),
+                    getValue: () => Config.ShowNearbyNPCWarning,
+                    setValue: value => Config.SetProperty(ref Config.ShowNearbyNPCWarning, value, nameof(Config.ShowNearbyNPCWarning))
+                );
+                api.AddColorOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.GarbageCanOkColor)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.GarbageCanOkColor)}.desc"),
+                    getValue: () => Config.GarbageCanOkColor,
+                    setValue: value => Config.SetProperty(ref Config.GarbageCanOkColor, value, nameof(Config.GarbageCanOkColor))
+                );
+                api.AddColorOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.GarbageCanWarnColor)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.GarbageCanWarnColor)}.desc"),
+                    getValue: () => Config.GarbageCanWarnColor,
+                    setValue: value => Config.SetProperty(ref Config.GarbageCanWarnColor, value, nameof(Config.GarbageCanWarnColor))
+                );
+            });
         }
     }
 }

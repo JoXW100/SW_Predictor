@@ -1,11 +1,11 @@
 {
   "Name": "Predictor Seed Maker Patch",
   "Author": "JoXW",
-  "Version": "1.0.1",
+  "Version": "1.1.0",
   "Description": "Predicts item drops from the Seed Maker.",
   "UniqueID": "JoXW.PredictorSeedMakerPatch",
   "EntryDll": "PredictorSeedMakerPatch.dll",
-  "MinimumApiVersion": "4.0.0",
+  "MinimumApiVersion": "4.1.0",
   "UpdateKeys": [ "Nexus:21332@SeedMakerPatch" ],
   "Dependencies": [
     {

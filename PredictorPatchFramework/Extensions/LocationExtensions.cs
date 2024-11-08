@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using xTile.Dimensions;
 
-namespace PredictorPatchFramework.Extentions
+namespace PredictorPatchFramework.Extensions
 {
-    public static class LocationExtentions
+    public static class LocationExtensions
     {
         public static Vector2 ToVector2(this Location location)
         {

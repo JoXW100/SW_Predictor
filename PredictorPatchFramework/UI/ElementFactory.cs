@@ -3,7 +3,7 @@ using DynamicUIFramework.Drawables;
 using DynamicUIFramework.Elements;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 using StardewValley;
 
 namespace PredictorPatchFramework.UI

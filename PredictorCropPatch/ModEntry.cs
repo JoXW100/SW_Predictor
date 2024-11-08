@@ -58,47 +58,39 @@ namespace PredictorCropPatch
             {
                 FrameworkUtils.API.RegisterPatch(Patch);
             }
-
-            var menu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (menu is null)
+            FrameworkUtils.API.RegisterPatchConfig(
+            manifest: ModManifest,
+            reset: () => Config = new ModConfig(),
+            save: () => Helper.WriteConfig(Config),
+            registerOptions: api =>
             {
-                return;
-            }
-
-            menu.Register(
-                mod: ModManifest,
-                reset: () => Config = new ModConfig(),
-                save: () => Helper.WriteConfig(Config)
-            );
-            menu.AddSectionTitle(
-                mod: ModManifest, 
-                text: () => Helper.Translation.Get("config.general.title")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
-                getValue: () => Config.Enabled,
-                setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
-            );
-            menu.AddSectionTitle(
-                mod: ModManifest,
-                text: () => Helper.Translation.Get("config.features.title")
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}.desc"),
-                getValue: () => Config.ShowItems,
-                setValue: value => Config.SetProperty(ref Config.ShowItems, value, nameof(Config.ShowItems))
-            );
-            menu.AddBoolOption(
-                mod: ModManifest,
-                name: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}"),
-                tooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}.desc"),
-                getValue: () => Config.ShowOutlines,
-                setValue: value => Config.SetProperty(ref Config.ShowOutlines, value, nameof(Config.ShowOutlines))
-            );
+                api.AddSectionTitle(() => Helper.Translation.Get("config.general.title"));
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.Enabled)}.desc"),
+                    getValue: () => Config.Enabled,
+                    setValue: value => Config.SetProperty(ref Config.Enabled, value, nameof(Config.Enabled))
+                );
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.RequireTool)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.RequireTool)}.desc"),
+                    getValue: () => Config.RequireTool,
+                    setValue: value => Config.SetProperty(ref Config.RequireTool, value, nameof(Config.RequireTool))
+                );
+                api.AddSectionTitle(() => Helper.Translation.Get("config.features.title"));
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowItems)}.desc"),
+                    getValue: () => Config.ShowItems,
+                    setValue: value => Config.SetProperty(ref Config.ShowItems, value, nameof(Config.ShowItems))
+                );
+                api.AddBoolOption(
+                    getName: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}"),
+                    getTooltip: () => Helper.Translation.Get($"options.{nameof(Config.ShowOutlines)}.desc"),
+                    getValue: () => Config.ShowOutlines,
+                    setValue: value => Config.SetProperty(ref Config.ShowOutlines, value, nameof(Config.ShowOutlines))
+                );
+            });
         }
     }
 }

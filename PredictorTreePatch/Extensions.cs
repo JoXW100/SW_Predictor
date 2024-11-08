@@ -7,11 +7,11 @@ using StardewValley.Extensions;
 using Microsoft.Xna.Framework;
 using System.Reflection;
 using PredictorPatchFramework;
-using PredictorPatchFramework.Extentions;
+using PredictorPatchFramework.Extensions;
 
 namespace PredictorTreePatch
 {
-    internal static class Extentions
+    internal static class Extensions
     {
         public static Item? TryGetDrop(this Tree tree, WildTreeItemData drop, Random r, Farmer targetFarmer, string fieldName, Func<string, string>? formatItemId = null, bool? isStump = null)
         {
@@ -67,7 +67,7 @@ namespace PredictorTreePatch
                                         item.Quality = 4;
                                     }
 
-                                    CreateItemExtentions.Predict_createItemDebris(_ctx, new PredictionItem(item), new Vector2(tileLocation.X * 64f, (tileLocation.Y - 3f) * 64f), -1, location, Game1.player.StandingPixel.Y);
+                                    CreateItemExtensions.Predict_createItemDebris(_ctx, new PredictionItem(item), new Vector2(tileLocation.X * 64f, (tileLocation.Y - 3f) * 64f), -1, location, Game1.player.StandingPixel.Y);
                                     if (!seedDropItem.ContinueOnDrop)
                                     {
                                         flag = false;
@@ -85,18 +85,18 @@ namespace PredictorTreePatch
                                 item2.Quality = 4;
                             }
 
-                            CreateItemExtentions.Predict_createItemDebris(_ctx, new PredictionItem(item2), new Vector2(tileLocation.X * 64f, (tileLocation.Y - 3f) * 64f), -1, location, Game1.player.StandingPixel.Y);
+                            CreateItemExtensions.Predict_createItemDebris(_ctx, new PredictionItem(item2), new Vector2(tileLocation.X * 64f, (tileLocation.Y - 3f) * 64f), -1, location, Game1.player.StandingPixel.Y);
                         }
 
                         if (Utility.tryRollMysteryBox(0.03))
                         {
-                            CreateItemExtentions.Predict_createItemDebris(_ctx, PredictionItem.Create((Game1.player.stats.Get(StatKeys.Mastery(2)) != 0) ? "(O)GoldenMysteryBox" : "(O)MysteryBox"), new Vector2(tileLocation.X, tileLocation.Y - 3f) * 64f, -1, location, Game1.player.StandingPixel.Y - 32);
+                            CreateItemExtensions.Predict_createItemDebris(_ctx, PredictionItem.Create((Game1.player.stats.Get(StatKeys.Mastery(2)) != 0) ? "(O)GoldenMysteryBox" : "(O)MysteryBox"), new Vector2(tileLocation.X, tileLocation.Y - 3f) * 64f, -1, location, Game1.player.StandingPixel.Y - 32);
                         }
 
-                        CreateItemExtentions.Predict_trySpawnRareObject(_ctx, Game1.player, new Vector2(tileLocation.X, tileLocation.Y - 3f) * 64f, tree.Location, 2.0, 1.0, Game1.player.StandingPixel.Y - 32);
+                        CreateItemExtensions.Predict_trySpawnRareObject(_ctx, Game1.player, new Vector2(tileLocation.X, tileLocation.Y - 3f) * 64f, tree.Location, 2.0, 1.0, Game1.player.StandingPixel.Y - 32);
                         if (_ctx.Random.NextBool() && Game1.player.team.SpecialOrderRuleActive("DROP_QI_BEANS"))
                         {
-                            CreateItemExtentions.Predict_createObjectDebris(_ctx, "(O)890", (int)tileLocation.X, (int)tileLocation.Y - 3, ((int)tileLocation.Y + 1) * 64, 0, 1f, location);
+                            CreateItemExtensions.Predict_createObjectDebris(_ctx, "(O)890", (int)tileLocation.X, (int)tileLocation.Y - 3, ((int)tileLocation.Y + 1) * 64, 0, 1f, location);
                         }
 
                         // tree.hasSeed.Value = false;
@@ -119,7 +119,7 @@ namespace PredictorTreePatch
                             Item? item3 = tree.TryGetDrop(shakeItem, _ctx.Random, Game1.player, "ShakeItems");
                             if (item3 != null)
                             {
-                                CreateItemExtentions.Predict_createItemDebris(_ctx, new PredictionItem(item3), tileLocation * 64f, -2, tree.Location);
+                                CreateItemExtensions.Predict_createItemDebris(_ctx, new PredictionItem(item3), tileLocation * 64f, -2, tree.Location);
                             }
                         }
 
