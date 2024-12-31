@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DynamicUIFramework\DynamicUIFramework.csproj" Private="false"/>
+    <ProjectReference Include="..\DynamicUIFramework\DynamicUIFramework.csproj" Private="false" />
   </ItemGroup>
 
   <ItemGroup>

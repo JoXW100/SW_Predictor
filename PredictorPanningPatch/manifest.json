@@ -5,7 +5,7 @@
   "Description": "Predicts item drops from panning spots.",
   "UniqueID": "JoXW.PredictorPanningPatch",
   "EntryDll": "PredictorPanningPatch.dll",
-  "MinimumApiVersion": "4.1.0",
+  "MinimumApiVersion": "4.0.0",
   "UpdateKeys": [ "Nexus:21332@PanningPatch" ],
   "Dependencies": [
     {

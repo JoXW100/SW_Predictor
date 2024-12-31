@@ -106,7 +106,6 @@ namespace PredictorGeodePatch
                                     {
                                         return PredictionItem.Create(random.Choose("(O)687", "(O)695"));
                                     }
-
                                     return PredictionItem.Create("(O)242", 2);
                                 case 3:
                                     return PredictionItem.Create("(O)204", 2);
@@ -127,7 +126,6 @@ namespace PredictorGeodePatch
                                     {
                                         return PredictionItem.Create("(W)60");
                                     }
-
                                     return PredictionItem.Create(random.Choose("(O)533", "(O)534"));
                                 case 11:
                                     return PredictionItem.Create("(O)621");
@@ -204,7 +202,7 @@ namespace PredictorGeodePatch
                                 continue;
                             }
 
-                            Item? item = ItemQueryResolver.TryResolveRandomItem(drop, new ItemQueryContext(null, null, random), avoidRepeat: false);
+                            Item? item = ItemQueryResolver.TryResolveRandomItem(drop, new ItemQueryContext(null, null, random, "geode > artifact data"), avoidRepeat: false);
                             if (item != null)
                             {
                                 if (drop.SetFlagOnPickup != null)

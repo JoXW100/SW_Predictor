@@ -5,7 +5,7 @@
   "Description": "Predicts tree drops.",
   "UniqueID": "JoXW.PredictorTreePatch",
   "EntryDll": "PredictorTreePatch.dll",
-  "MinimumApiVersion": "4.1.0",
+  "MinimumApiVersion": "4.0.0",
   "UpdateKeys": [ "Nexus:21332@TreePatch" ],
   "Dependencies": [
     {

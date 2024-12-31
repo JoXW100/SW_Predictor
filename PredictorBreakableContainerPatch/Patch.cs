@@ -84,7 +84,7 @@ namespace PredictorBreakableContainerPatch
                     }
                     else
                     {
-                        obj.Predict_performToolAction(ctx);
+                        obj.Predict_performToolAction(ctx, Game1.player.CurrentTool);
                     }
                 }
 

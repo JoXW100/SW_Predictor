@@ -7,6 +7,8 @@ using StardewValley;
 using StardewValley.Objects;
 using Microsoft.Xna.Framework;
 using Object = StardewValley.Object;
+using StardewValley.Enchantments;
+using StardewValley.Tools;
 
 namespace PredictorBreakableContainerPatch
 {
@@ -19,7 +21,7 @@ namespace PredictorBreakableContainerPatch
 
         public static void Predict_releaseContents(this BreakableContainer container, PredictionContext _ctx, Farmer who)
         {
-            GameLocation location = container.Location;
+            GameLocation? location = container.Location;
             if (location == null)
             {
                 return;

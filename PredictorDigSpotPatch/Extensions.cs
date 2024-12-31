@@ -78,7 +78,7 @@ namespace PredictorDigSpotPatch
             var tilePixelPos = new Vector2(xLocation * 64, yLocation * 64);
             var hasGenerousEnchantment = who?.CurrentTool is Hoe hoe && hoe.hasEnchantmentOfType<GenerousEnchantment>();
             var locationData = location.GetData();
-            var context = new ItemQueryContext(location, who, random);
+            var context = new ItemQueryContext(location, who, random, "location '" + location.NameOrUniqueName + "' > artifact spots");
             var possibleDrops = Game1.locationData["Default"].ArtifactSpots.AsEnumerable();
             if (locationData?.ArtifactSpots != null && locationData.ArtifactSpots.Count > 0)
             {

@@ -93,11 +93,13 @@ namespace PredictorFishingPatch
             }
 
             var context = new PredictionContext();
-            if (Game1.player.CurrentItem is FishingRod rod)
+            if (Game1.player.currentLocation.canFishHere() 
+                && Game1.player.CurrentItem is FishingRod rod 
+                && FishingHelper.TryFindFishingLocation(Game1.player, rod, out var fishingLocation))
             {
                 var bait = rod.GetBait();
-                double potensy = GetBaitPotensy(bait);
-                Game1.player.currentLocation.Predict_getAllFish(context, 0, bait?.QualifiedItemId, rod.clearWaterDistance, Game1.player, potensy, rod.bobber.Value);
+                var potensy = FishingHelper.GetBaitPotensy(bait);
+                Game1.player.currentLocation.Predict_getAllFish(context, bait?.QualifiedItemId, rod.clearWaterDistance, Game1.player, potensy, fishingLocation);
                 var holder = FishInfoDisplayContent;
                 if (holder is not null)
                 {
@@ -137,7 +139,7 @@ namespace PredictorFishingPatch
                 }
 
                 var bait = rod.GetBait();
-                double potensy = GetBaitPotensy(bait);
+                double potensy = FishingHelper.GetBaitPotensy(bait);
                 var fish = Game1.player.currentLocation.getFish(0, bait?.QualifiedItemId, rod.clearWaterDistance, Game1.player, potensy, bobberTile);
                 Catches.Push(fish.ItemId);
 
@@ -299,11 +301,6 @@ namespace PredictorFishingPatch
                 return a.Category - b.Category;
             }
             return chanceA.IsTrash ? 1 : -1;
-        }
-
-        private static double GetBaitPotensy(Object? bait)
-        {
-            return bait is not null ? bait.Price / 10d : 0d;
         }
     }
 }

@@ -136,11 +136,11 @@ namespace PredictorPatchFramework.Extensions
             {
                 int num = _ctx.Random.Next(dictionary.Count);
                 int num2 = 0;
-                foreach (TrinketData value in dictionary.Values)
+                foreach (KeyValuePair<string, TrinketData> item in dictionary)
                 {
-                    if (num == num2 && value.DropsNaturally)
+                    if (num == num2 && item.Value.DropsNaturally)
                     {
-                        trinket = PredictionItem.Create("(TR)" + value.Id);
+                        trinket = PredictionItem.Create("(TR)" + item.Key);
                         break;
                     }
 
@@ -171,12 +171,12 @@ namespace PredictorPatchFramework.Extensions
 
             if (Game1.stats.DaysPlayed > 2 && random.NextDouble() < 0.002 * chanceModifier)
             {
-                Predict_createItemDebris(_ctx, new PredictionItem(Utility.getRandomCosmeticItem(_ctx.Random)), position, -1, location, groundLevel);
+                Predict_createItemDebris(_ctx, new PredictionItem(Utility.getRandomCosmeticItem(random)), position, -1, location, groundLevel);
             }
 
             if (Game1.stats.DaysPlayed > 2 && random.NextDouble() < 0.0006 * chanceModifier)
             {
-                Predict_createItemDebris(_ctx, PredictionItem.Create("(O)SkillBook_" + _ctx.Random.Next(5)), position, -1, location, groundLevel);
+                Predict_createItemDebris(_ctx, PredictionItem.Create("(O)SkillBook_" + random.Next(5)), position, -1, location, groundLevel);
             }
 
             return false;

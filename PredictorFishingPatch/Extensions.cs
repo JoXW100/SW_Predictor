@@ -11,6 +11,8 @@ using Microsoft.Xna.Framework;
 using PredictorPatchFramework;
 using System.Reflection;
 using Object = StardewValley.Object;
+using xTile;
+using System.Collections.Generic;
 
 namespace PredictorFishingPatch
 {
@@ -18,7 +20,7 @@ namespace PredictorFishingPatch
     {
         public static IMonitor ModLog => ModEntry.Instance.Monitor;
 
-        public static void Predict_getAllFish(this GameLocation location, PredictionContext _ctx, float millisecondsAfterNibble, string? bait, int waterDepth, Farmer who, double baitPotency, Vector2 bobberTile, string? locationName = null)
+        public static void Predict_getAllFish(this GameLocation location, PredictionContext _ctx, string? bait, int waterDepth, Farmer who, double baitPotency, Vector2 bobberTile, string? locationName = null)
         {
             _ctx.Properties.TryAdd("fishChances", new Dictionary<string, FishChanceData>());
             _ctx.Properties.TryAdd("baseChance", 1f);
@@ -28,11 +30,19 @@ namespace PredictorFishingPatch
 
             if (location is MineShaft mine)
             {
-                mine.Predict_getAllMineShaftFish(_ctx, millisecondsAfterNibble, bait, waterDepth, who, baitPotency, bobberTile, locationName);
+                mine.Predict_getAllMineShaftFish(_ctx, bait, waterDepth, who, baitPotency, bobberTile, locationName);
             }
             else if (location is Farm farm)
             {
-                farm.Predict_getAllFarmFish(_ctx, millisecondsAfterNibble, bait, waterDepth, who, baitPotency, bobberTile, locationName);
+                farm.Predict_getAllFarmFish(_ctx, bait, waterDepth, who, baitPotency, bobberTile, locationName);
+            }
+            else if (location is IslandSouthEast islandSouthEast)
+            {
+                islandSouthEast.Predict_getAllIslandSouthEastFish(_ctx, bait, waterDepth, who, baitPotency, bobberTile, locationName);
+            }
+            else if (location is IslandLocation island)
+            {
+                island.Predict_getAllIslandFish(_ctx, bait, waterDepth, who, baitPotency, bobberTile, locationName);
             }
 
             float baseChance = 1f;
@@ -66,11 +76,17 @@ namespace PredictorFishingPatch
                 }
             }
 
+            if (location.fishFrenzyFish.Value != null && !location.fishFrenzyFish.Value.Equals("") && Vector2.Distance(bobberTile, Utility.PointToVector2(location.fishSplashPoint.Value)) <= 2f)
+            {
+                _ctx.AddItemIfNotNull(location.fishFrenzyFish.Value);
+                return;
+            }
+
             bool isTutorialCatch = who.fishCaught.Length == 0;
-            location.Predict_GetAllFishFromLocationData(_ctx, bobberTile, waterDepth, who, isTutorialCatch, isInherited: false);
+            location.Predict_GetAllFishFromLocationData(_ctx, location.Name, bobberTile, waterDepth, who, isTutorialCatch, isInherited: false);
         }
 
-        public static void Predict_getAllFarmFish(this Farm farm, PredictionContext _ctx, float millisecondsAfterNibble, string? bait, int waterDepth, Farmer who, double baitPotency, Vector2 bobberTile, string? locationName = null)
+        public static void Predict_getAllFarmFish(this Farm farm, PredictionContext _ctx, string? bait, int waterDepth, Farmer who, double baitPotency, Vector2 bobberTile, string? locationName = null)
         {
             var _fishLocationOverrideField = farm.GetType().GetField("_fishLocationOverride", BindingFlags.NonPublic | BindingFlags.Instance);
             var _fishChanceOverrideField = farm.GetType().GetField("_fishChanceOverride", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -106,7 +122,7 @@ namespace PredictorFishingPatch
                 GameLocation? location = Game1.getLocationFromName(_fishLocationOverride);
                 if (location != null)
                 {
-                    Predict_getAllFish(location, _ctx, millisecondsAfterNibble, bait, waterDepth, who, baitPotency, bobberTile);
+                    Predict_getAllFish(location, _ctx, bait, waterDepth, who, baitPotency, bobberTile);
                     return;
                 }
                 // return base.getFish(millisecondsAfterNibble, bait, waterDepth, who, baitPotency, bobberTile, _fishLocationOverride);
@@ -119,34 +135,41 @@ namespace PredictorFishingPatch
             // return base.getFish(millisecondsAfterNibble, bait, waterDepth, who, baitPotency, bobberTile);
         }
 
-        public static void Predict_GetAllFishFromLocationData(this GameLocation location, PredictionContext _ctx, Vector2 bobberTile, int waterDepth, Farmer player, bool isTutorialCatch, bool isInherited, ItemQueryContext? itemQueryContext = null)
+        public static void Predict_GetAllFishFromLocationData(this GameLocation location, PredictionContext _ctx, string locationName, Vector2 bobberTile, int waterDepth, Farmer player, bool isTutorialCatch, bool isInherited, ItemQueryContext? itemQueryContext = null)
         {
-            Dictionary<string, LocationData> dictionary = DataLoader.Locations(Game1.content);
-            LocationData? locationData = location?.GetData();
-            Dictionary<string, string> allFishData = DataLoader.Fish(Game1.content);
-            if (location == null || !location.TryGetFishAreaForTile(bobberTile, out var id, out var _))
+            if (location == null)
             {
-                id = null;
+                location = Game1.getLocationFromName(locationName);
             }
 
-            bool flag = false;
+            LocationData? locationData = location != null ? location.GetData() : GameLocation.GetData(locationName);
+            Dictionary<string, string> allFishData = DataLoader.Fish(Game1.content);
+            if (location == null || !location.TryGetFishAreaForTile(bobberTile, out var fishAreaId, out var _))
+            {
+                fishAreaId = null;
+            }
+
+            bool usingMagicBait = false;
             bool hasCuriosityLure = false;
-            string? text = null;
+            string? baitTargetFish = null;
             if (player.CurrentTool is FishingRod fishingRod)
             {
-                flag = fishingRod.HasMagicBait();
+                usingMagicBait = fishingRod.HasMagicBait();
                 hasCuriosityLure = fishingRod.HasCuriosityLure();
                 Object bait = fishingRod.GetBait();
-                if (bait?.QualifiedItemId == "(O)SpecificBait" && bait.preservedParentSheetIndex.Value != null)
+                if (bait != null)
                 {
-                    text = "(O)" + bait.preservedParentSheetIndex.Value;
+                    if (bait.QualifiedItemId == "(O)SpecificBait" && bait.preservedParentSheetIndex.Value != null)
+                    {
+                        baitTargetFish = "(O)" + bait.preservedParentSheetIndex.Value;
+                    }
                 }
             }
 
             Point tilePoint = player.TilePoint;
-            itemQueryContext ??= new ItemQueryContext(location, null, _ctx.Random);
+            itemQueryContext ??= new ItemQueryContext(location, null, _ctx.Random, "location '" + locationName + "' > fish data");
 
-            IEnumerable<SpawnFishData> enumerable = dictionary["Default"].Fish;
+            IEnumerable<SpawnFishData> enumerable = Game1.locationData["Default"].Fish;
             if (locationData != null && locationData.Fish != null && locationData.Fish.Count > 0)
             {
                 enumerable = enumerable.Concat(locationData.Fish);
@@ -156,29 +179,33 @@ namespace PredictorFishingPatch
 
             float baseChance = (float)_ctx.Properties.GetValueOrDefault("baseChance", 1f);
             float randomModifier = (float)Utility.CreateRandom(Game1.uniqueIDForThisGame, player.stats.Get("PreciseFishCaught") * 859).NextDouble();
-            var spawns = EnumerateValidSpawns(enumerable, location, player, id, isInherited, flag, bobberTile, waterDepth, hasCuriosityLure, text, isTutorialCatch).ToArray();
+            var spawns = EnumerateValidSpawns(enumerable, location, player, fishAreaId, isInherited, usingMagicBait, bobberTile, waterDepth, hasCuriosityLure, baitTargetFish, isTutorialCatch).ToArray();
             var chanceWeights = new Dictionary<string, float>();
             foreach (var spawn in spawns)
             {
-                if (spawn.RandomItemId != null && spawn.RandomItemId.Any())
+                var ids = spawn.RandomItemId != null && spawn.RandomItemId.Any() ? spawn.RandomItemId : new List<string>() { spawn.ItemId };
+                foreach (var id in ids)
                 {
-                    foreach (var rid in spawn.RandomItemId)
+                    var query = id;
+                    if (!query.StartsWith('('))
                     {
-                        var results = ItemQueryResolver.TryResolve(rid, itemQueryContext, ItemQuerySearchMode.All, spawn.PerItemCondition, spawn.MaxItems);
-                        if (results != null && results.Length == 1 && ItemQueryResolver.ApplyItemFields(results.First().Item, spawn, itemQueryContext) is Item item)
-                        {
-                            var chance = Predict_CheckGenericFishRequirements(item, allFishData, location, player, spawn, waterDepth, flag, hasCuriosityLure, spawn.ItemId == text, isTutorialCatch);
-                            chanceWeights.TryAdd(rid, chance);
-                        }
+                        query = query
+                            .Replace("BOBBER_X", ((int)bobberTile.X).ToString()).Replace("BOBBER_Y", ((int)bobberTile.Y).ToString())
+                            .Replace("WATER_DEPTH", waterDepth.ToString());
                     }
-                }
-                else
-                {
-                    var results = ItemQueryResolver.TryResolve(spawn.ItemId, itemQueryContext, ItemQuerySearchMode.All, spawn.PerItemCondition, spawn.MaxItems);
-                    if (results != null && results.Length == 1 && ItemQueryResolver.ApplyItemFields(results.First().Item, spawn, itemQueryContext) is Item item)
+
+                    var results = ItemQueryResolver.TryResolve(query, itemQueryContext, ItemQuerySearchMode.AllOfTypeItem, spawn.PerItemCondition, spawn.MaxItems);
+                    if (results == null)
                     {
-                        var chance = Predict_CheckGenericFishRequirements(item, allFishData, location, player, spawn, waterDepth, flag, hasCuriosityLure, spawn.ItemId == text, isTutorialCatch);
-                        chanceWeights.TryAdd(spawn.ItemId, chance);
+                        continue;
+                    }
+                    foreach (var result in results)
+                    {
+                        if (result != null && ItemQueryResolver.ApplyItemFields(result.Item, spawn, itemQueryContext) is Item item)
+                        {
+                            var chance = Predict_CheckGenericFishRequirements(item, allFishData, location, player, spawn, waterDepth, usingMagicBait, hasCuriosityLure, spawn.ItemId == baitTargetFish, isTutorialCatch);
+                            chanceWeights.TryAdd(item.QualifiedItemId, chance);
+                        }
                     }
                 }
             }
@@ -209,7 +236,7 @@ namespace PredictorFishingPatch
                 }
                 else
                 {
-                    r = spawn.GetChance(hasCuriosityLure, player.DailyLuck, player.LuckLevel, (float value, IList<QuantityModifier> modifiers, QuantityModifier.QuantityModifierMode mode) => Utility.ApplyQuantityModifiers(value, modifiers, mode, location), spawn.ItemId == text);
+                    r = spawn.GetChance(hasCuriosityLure, player.DailyLuck, player.LuckLevel, (float value, IList<QuantityModifier> modifiers, QuantityModifier.QuantityModifierMode mode) => Utility.ApplyQuantityModifiers(value, modifiers, mode, location), spawn.ItemId == baitTargetFish);
                 }
 
                 if (r > 1f)
@@ -493,7 +520,42 @@ namespace PredictorFishingPatch
             return 0f;
         }
 
-        public static void Predict_getAllMineShaftFish(this MineShaft location, PredictionContext _ctx, float millisecondsAfterNibble, string? bait, int waterDepth, Farmer who, double baitPotency, Vector2 bobberTile, string? locationName = null)
+        public static void Predict_getAllIslandFish(this IslandLocation location, PredictionContext _ctx, string? bait, int waterDepth, Farmer who, double baitPotency, Vector2 bobberTile, string? locationName = null)
+        {
+            float baseChance = _ctx.Properties.TryGetValue("baseChance", out var c) ? (float)c : 1f;
+            float chance = 0.15f * baseChance;
+            var item = _ctx.AddItemIfNotNull("(O)73");
+            if (item != null)
+            {
+                _ctx.GetPropertyValue<Dictionary<string, FishChanceData>>("fishChances")
+                    .TryAdd(item.ItemId, new FishChanceData(chance, true, false));
+                baseChance = baseChance - chance;
+            }
+            _ctx.Properties["baseChance"] = baseChance;
+        }
+
+        public static void Predict_getAllIslandSouthEastFish(this IslandSouthEast location, PredictionContext _ctx, string? bait, int waterDepth, Farmer who, double baitPotency, Vector2 bobberTile, string? locationName = null)
+        {
+            if ((int)bobberTile.X >= 18 && (int)bobberTile.X <= 20 && (int)bobberTile.Y >= 20 && (int)bobberTile.Y <= 22 && !location.fishedWalnut.Value)
+            {
+                float baseChance = _ctx.Properties.TryGetValue("baseChance", out var c) ? (float)c : 1f;
+                float chance = 0.15f * baseChance;
+                var item = _ctx.AddItemIfNotNull("(O)73");
+                if (item != null)
+                {
+                    _ctx.GetPropertyValue<Dictionary<string, FishChanceData>>("fishChances")
+                        .TryAdd(item.ItemId, new FishChanceData(chance, true, false));
+                    baseChance = baseChance - chance;
+                }
+                _ctx.Properties["baseChance"] = baseChance;
+            }
+            else
+            {
+                location.Predict_getAllIslandFish(_ctx, bait, waterDepth, who, baitPotency, bobberTile, locationName);
+            }
+        }
+
+        public static void Predict_getAllMineShaftFish(this MineShaft location, PredictionContext _ctx, string? bait, int waterDepth, Farmer who, double baitPotency, Vector2 bobberTile, string? locationName = null)
         {
             double num = 1.0;
             num += 0.4 * (double)who.FishingLevel;
@@ -511,11 +573,7 @@ namespace PredictorFishingPatch
 
             PredictionItem? item = null;
             var area = location.getMineArea();
-            float baseChance = 1f;
-            if (_ctx.Properties.TryGetValue("baseChance", out var c))
-            {
-                baseChance = (float)c;
-            }
+            float baseChance = _ctx.Properties.TryGetValue("baseChance", out var c) ? (float)c : 1f;
             double chance = 1.0;
             switch (area)
             {

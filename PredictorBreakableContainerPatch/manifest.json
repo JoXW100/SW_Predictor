@@ -1,11 +1,11 @@
 {
   "Name": "Predictor Breakable Container Patch",
   "Author": "JoXW",
-  "Version": "1.1.0",
+  "Version": "1.1.1",
   "Description": "Predicts items inside breakable containers.",
   "UniqueID": "JoXW.PredictorBreakableContainerPatch",
   "EntryDll": "PredictorBreakableContainerPatch.dll",
-  "MinimumApiVersion": "4.1.0",
+  "MinimumApiVersion": "4.0.0",
   "UpdateKeys": [ "Nexus:21332@BreakableContainerPatch" ],
   "Dependencies": [
     {
